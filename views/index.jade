@@ -1,10 +1,16 @@
 ﻿extends layout
-
-block content
-    .well
-        button#serverButton(type='button' action='' class='btn btn-default' ) server
-        button#clientButton(type='button' class='btn btn-default' ) klijent
-        
+block title
+    .jumbotron
+        table(style='width:100%')
+            tr
+                td(style='width:50%')
+                    h1 LieToMe!
+                    p Lie to your friends. 
+                td(align='right')
+                    button#serverButton(type='button' action='' class='btn btn-default' style="height: 100px; width: 200px; font-size:30px") server
+                td(align='right')
+                    button#clientButton(type='button' class='btn btn-default' style="height: 100px; width: 200px; font-size:30px") klijent
+     
     script.
         $('#serverButton').click(function(evt){
             window.location = 'server';

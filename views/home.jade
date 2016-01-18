@@ -1,4 +1,5 @@
 ﻿extends layout
+
 block title
     .jumbotron
         h1 LieToMe!
@@ -20,8 +21,7 @@ block content
                                 a()=room
                             
                     button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Join!
-            .col-lg-6
-                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Create a new room!
+            
 
     script(type='text/javascript').
         var roomName;
