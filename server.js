@@ -191,6 +191,8 @@ function isInArray(array, obj) {
     return false;
 }
 
+function nada () {};
+
 function sendQuestion(req) {
     var conn = new sql.Connection(config);
     var request = new sql.Request(conn);
