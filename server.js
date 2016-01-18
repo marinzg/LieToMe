@@ -156,7 +156,7 @@ app.io.route('userConnected', function (req) {
     });
     
 
-    usersInRoom[req.data.room].push(req.data.username);
+    usersInRoom[req.data.room][req.data.username] = "";
     console.log(usersInRoom[req.data.room].length);
     
     
@@ -177,9 +177,10 @@ app.io.route('sendMessage', function (req) {
     for (var i in usersInRoom[req.data.room]) {
         var un = usersInRoom[req.data.room][i];
        
-        console.log(un + " : "+ usersInRoom[req.data.room][un]);
+        console.log(i + " : "+ usersInRoom[req.data.room][i]);
         //console.log(i);
     };
+   
 });
 app.io.route('lockRoom', function (req) {
     lockedRooms.push(req.data.roomName);
@@ -216,7 +217,7 @@ function nada () {};
 function sendQuestion(req) {
     var conn = new sql.Connection(config);
     var request = new sql.Request(conn);
-    
+    var contains = true;
     
     conn.connect(function (err) {
         if (err) {
@@ -230,8 +231,10 @@ function sendQuestion(req) {
             else {
                 do {
                     var x = Math.floor(Math.random() * recordset.length);
+                    contains = ArrayContains(questionsInRoom[req.data.roomName], x);
 
-                } while (questionsInRoom[req.data.roomName].contains(x));
+                } while (!contains);
+                console.log("izašo sam iz vajl petlje");
                 questionsInRoom[req.data.roomName].push(x);
                 req.io.emit('questionSent', { message: recordset[x].question });
             }
@@ -243,12 +246,16 @@ function sendQuestion(req) {
     });
 }
 
-Array.prototype.contains = function (obj) {
-    var i = this.length;
+function ArrayContains(array, obj){
+    var i = array.length;
     while (i--) {
-        if (this[i] === obj) {
+        if (array[i] === obj) {
             return true;
         }
     }
     return false;
+
 }
+
+
+  
