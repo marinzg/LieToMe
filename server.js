@@ -15,7 +15,7 @@ var http = require('http');
 var path = require('path');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var sql = require('mssql');
-
+var usersInRoom = [];
 
 var rooms = ['Public', 'Elfs', 'Random'];
 var lockedRooms = ['Public'];
@@ -53,6 +53,9 @@ var config = {
 var questionsInRoom = [];
 questionsInRoom["Elfs"] = [];
 questionsInRoom["Random"] = [];
+usersInRoom["Elfs"] = [];
+
+
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
@@ -131,6 +134,7 @@ app.get('/serverRoom/:id', function (req, res) {
         rooms.push(req.params.id);
         console.log(rooms);
         questionsInRoom[req.params.id] = [];
+        usersInRoom[req.params.id] = [];
     }
     //render the room template with the name of the room for the underlying data model
     res.render('serverRoom', { title : req.params.id, username: 'root' });
@@ -150,6 +154,12 @@ app.io.route('userConnected', function (req) {
         message: req.data.username + ' just joined the room. ',
         username: req.data.username
     });
+    
+
+    usersInRoom[req.data.room].push(req.data.username);
+    console.log(usersInRoom[req.data.room].length);
+    
+    
 });
 app.io.route('sendMessage', function (req) {
     
@@ -160,6 +170,16 @@ app.io.route('sendMessage', function (req) {
         username: req.data.username,
         room: req.data.room
     });
+    usersInRoom[req.data.room][req.data.username] = req.data.message; //u bodovanju prebrisati odgovore
+    var counter1 = usersInRoom[req.data.room].length;
+    var counter2;
+    console.log("tu sam");
+    for (var i in usersInRoom[req.data.room]) {
+        var un = usersInRoom[req.data.room][i];
+       
+        console.log(un + " : "+ usersInRoom[req.data.room][un]);
+        //console.log(i);
+    };
 });
 app.io.route('lockRoom', function (req) {
     lockedRooms.push(req.data.roomName);

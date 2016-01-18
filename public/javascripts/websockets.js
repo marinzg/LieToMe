@@ -1,6 +1,7 @@
 ﻿var io = io.connect();
 io.on('announce', function (data) {
-    $('#answers').append('<button>' + data.message + '</button>');
+    $('#answers').append('<button style=\'visibility:hidden\'>' + data.message + '</button>');
+
 });
 
 io.on('userConnected', function (data) {
