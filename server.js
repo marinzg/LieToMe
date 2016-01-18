@@ -47,16 +47,16 @@ var config = {
     server: "localhost\\MSSQLSERVER",
     database: "LieToMeDB",
     user: "sa",
-    password:"n4KmgANB"
+    password: "n4KmgANB"
 };
 
 passport.serializeUser(function (user, done) {
-	done(null, user.id);
+    done(null, user.id);
 });
 passport.deserializeUser(function (id, done) {
-	User.findById(id, function (err, user) {
-		done(err, user);
-	});
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
 });
 /*passport.use(new LocalStrategy(function (username, password, done) {
 	if (username === "dana")
@@ -65,7 +65,7 @@ passport.deserializeUser(function (id, done) {
 
 // development only
 if ('development' == app.get('env')) {
-	app.use(express.errorHandler());
+    app.use(express.errorHandler());
 }
 app.get('/', function (req, res) {
     
@@ -83,20 +83,20 @@ app.get('/create', function (req, res) {
 
 });*/
 app.get('/about', function (req, res) {
-	
-	res.render('about', { title: '' });
+    
+    res.render('about', { title: '' });
 
 });
 app.get('/rooms/:id', function (req, res) {
-	if (rooms.indexOf(req.params.id) === -1) {
-		rooms.push(req.params.id);
-		console.log(rooms);
-		DMSocket.join(req.params.id);
-		DMSocket.emit('newRoom', { room: req.params.id });
+    if (rooms.indexOf(req.params.id) === -1) {
+        rooms.push(req.params.id);
+        console.log(rooms);
+        DMSocket.join(req.params.id);
+        DMSocket.emit('newRoom', { room: req.params.id });
     }
     if (!isInArray(lockedRooms, req.params.id)) {
         //render the room template with the name of the room for the underlying data model
-        res.render('room', { title : req.params.id, username : req.query.username }); 
+        res.render('room', { title : req.params.id, username : req.query.username });
     } else {
         indexMessage = 'ne bu išlo';
         res.redirect('home');
@@ -110,7 +110,7 @@ app.get('/rooms/:id', function (req, res) {
 });*/
 
 app.get('/server', function (req, res) {
-        
+    
     res.render('server', { rooms: rooms });
 });
 app.get('/home', function (req, res) {
@@ -124,9 +124,9 @@ app.get('/home', function (req, res) {
 });
 
 app.get('/serverRoom/:id', function (req, res) {
-	if (rooms.indexOf(req.params.id) === -1) {
-		rooms.push(req.params.id);
-		console.log(rooms);
+    if (rooms.indexOf(req.params.id) === -1) {
+        rooms.push(req.params.id);
+        console.log(rooms);
     }
     
     //render the room template with the name of the room for the underlying data model
@@ -141,26 +141,26 @@ app.get('/serverRoom/:id', function (req, res) {
 
 // Setup the ready route, join room and broadcast to room.
 app.io.route('userConnected', function (req) {
-	console.log('Recieved real-time ready message from user: ' + req.data.username + ' for room: ' + req.data.room);
-	req.io.join(req.data.room);
-	req.io.room(req.data.room).broadcast('userConnected', {
-		message: req.data.username + ' just joined the room. ',
-		username: req.data.username
-	});
+    console.log('Recieved real-time ready message from user: ' + req.data.username + ' for room: ' + req.data.room);
+    req.io.join(req.data.room);
+    req.io.room(req.data.room).broadcast('userConnected', {
+        message: req.data.username + ' just joined the room. ',
+        username: req.data.username
+    });
 });
 app.io.route('sendMessage', function (req) {
-	
-	console.log('recieved message : ' + req.data.message + ' for room ' + req.data.room + ' from user ' + req.data.username);
-	req.io.join(req.data.room);
-	req.io.room(req.data.room).broadcast('announce', {
-		message: req.data.message,
-		username: req.data.username,
-		room: req.data.room
-	});
+    
+    console.log('recieved message : ' + req.data.message + ' for room ' + req.data.room + ' from user ' + req.data.username);
+    req.io.join(req.data.room);
+    req.io.room(req.data.room).broadcast('announce', {
+        message: req.data.message,
+        username: req.data.username,
+        room: req.data.room
+    });
 });
 app.io.route('lockRoom', function (req) {
     
-    lockedRooms.push(req.data.roomName);
+    //lockedRooms.push(req.data.roomName);
     /*
     var questions = ['proba'];
     var conn = new sql.Connection(config);
@@ -182,14 +182,20 @@ app.io.route('lockRoom', function (req) {
             conn.close();
         });
     });*/
-    console.log('roomname=' + req.data.roomName);
+    console.log("u server.js sam");
+    req.io.emit('lock', { message: 'bla bla bla' });
+    //app.io.room(req.data.roomName).broadcast('lock', { message: "bla bla" });
+    lockedRooms.push(req.data.roomName);
+
+
+    //console.log('roomname=' + req.data.roomName);
     
-    req.io.join(req.data.roomName);
-    req.io.room(req.data.roomName).broadcast('announce', {
-        message: "lol",
-        username: "root",
-        room: req.data.roomName
-    });
+    //req.io.join(req.data.roomName);
+   // req.io.room(req.data.roomName).broadcast('announce', {
+   //     message: "lol",
+   //     username: "root",
+   //     room: req.data.roomName
+   // });
 });
 /*app.io.route('DMWatching', function (req) {
 	rooms.forEach(function (room) {
