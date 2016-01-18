@@ -44,12 +44,12 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    server: "localhost\\MSSQLSERVER",    //MARIN
-    //server: "localhost\\SQLEXPRESS",    //LINA
+    //server: "localhost\\MSSQLSERVER",    //MARIN
+    server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    password: "n4KmgANB"        //MARIN
-    //password : "tbbt"           //LINA
+    //password: "n4KmgANB"        //MARIN
+    password : "tbbt"           //LINA
 };
 
 
@@ -174,15 +174,24 @@ app.io.route('sendMessage', function (req) {
         room: req.data.room
     });
     usersInRoom[req.data.room][req.data.username] = req.data.message; //u bodovanju prebrisati odgovore
-    var counter1 = usersInRoom[req.data.room].length;
-    var counter2;
-    console.log("tu sam");
+    var counterUserInRoom = -1;
+    var counterAnswerInRoom = 0;
+    
     for (var i in usersInRoom[req.data.room]) {
-        var un = usersInRoom[req.data.room][i];
+        counterUserInRoom++;
        
-        console.log(i + " : "+ usersInRoom[req.data.room][i]);
+        console.log(i + " : " + usersInRoom[req.data.room][i]);
+
+        if (usersInRoom[req.data.room][i] !== "") {
+            counterAnswerInRoom++;
+        }
         //console.log(i);
     };
+    console.log(counterUserInRoom);
+    console.log(counterAnswerInRoom);
+    if (counterUserInRoom === counterAnswerInRoom) {
+        console.log("svi su odgovorili");
+    }
    
 });
 app.io.route('lockRoom', function (req) {
@@ -230,8 +239,8 @@ function sendQuestion(req) {
                 do {
                     var x = Math.floor(Math.random() * recordset.length);
                     contains = ArrayContains(questionsInRoom[req.data.roomName], x);
-
-                } while (!contains);
+                    console.log(contains);
+                } while (contains);
                 console.log("izašo sam iz vajl petlje");
                 questionsInRoom[req.data.roomName].push(x);
                 req.io.emit('questionSent', { message: recordset[x].question });
