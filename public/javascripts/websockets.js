@@ -1,6 +1,6 @@
 ﻿var io = io.connect();
 io.on('announce', function (data) {
-    $('#conversation').append('<button>' + data.message + '</button>');
+    $('#answers').append('<button>' + data.message + '</button>');
 });
 
 io.on('userConnected', function (data) {
@@ -25,7 +25,7 @@ $('#sendButton').click(function () {
         var messagePayload = { message: messageText, room: roomName, username: userName };
         io.emit('sendMessage', messagePayload);
         $('#chatTextBox').val(''); //clears the message text box
-        $('#conversation').append('<button style="color: rgb(191, 62, 17)">' + messagePayload.message + '</button>'); ///adds  message to conversation
+      //  $('#conversation').append('<button style="color: rgb(191, 62, 17)">' + messagePayload.message + '</button>'); ///adds  message to conversation
     }
 });
 
