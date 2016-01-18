@@ -44,12 +44,15 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    server: "localhost\\SQLEXPRESS",
+    server: "localhost\\MSSQLSERVER",    //MARIN
+    //server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-   // password: "n4KmgANB"
-   password : "tbbt"
+    password: "n4KmgANB"        //MARIN
+    //password : "tbbt"           //LINA
 };
+
+
 var questionsInRoom = [];
 questionsInRoom["Elfs"] = [];
 questionsInRoom["Random"] = [];
@@ -180,9 +183,6 @@ app.io.route('getQuestion', function (req) {
 
 app.listen(app.get('port'));
 
-function marin(){
-    var bla = 0;
-}
 function isInArray(array, obj) {
     for (var i = 0; i < array.length; i++) {
         if (array[i] === obj)
@@ -190,8 +190,6 @@ function isInArray(array, obj) {
     }
     return false;
 }
-
-function nada () {};
 
 function sendQuestion(req) {
     var conn = new sql.Connection(config);
