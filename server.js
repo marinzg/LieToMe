@@ -44,10 +44,11 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    server: "localhost\\MSSQLSERVER",
+    server: "localhost\\SQLEXPRESS",
     database: "LieToMeDB",
     user: "sa",
-    password: "n4KmgANB"
+   // password: "n4KmgANB"
+   password : "tbbt"
 };
 var questionsInRoom = [];
 questionsInRoom["Elfs"] = [];
@@ -179,6 +180,9 @@ app.io.route('getQuestion', function (req) {
 
 app.listen(app.get('port'));
 
+function marin(){
+    var bla = 0;
+}
 function isInArray(array, obj) {
     for (var i = 0; i < array.length; i++) {
         if (array[i] === obj)
