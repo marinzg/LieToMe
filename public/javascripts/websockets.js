@@ -7,9 +7,9 @@ io.on('userConnected', function (data) {
     $('#console').append('<p>' + data.message + '</p>');
 });
 
-io.on('lock', function (data) {
-    alert("u lock  sam u soketima" + data.message);
-    $('#question').append('<p>' + data.message + '</p>'); //'<p>' + data.message + '</p>'
+io.on('questionSent', function (data) {
+    document.getElementById('question').innerHTML = "";
+    $('#question').append('<p>' + data.message + '</p>');
 });
 
 io.on('setQuestion', function (data) {
@@ -32,6 +32,12 @@ $('#sendButton').click(function () {
 $('#lockButton').click(function (evt) {
     io.emit('lockRoom', { roomName: roomName });
     alert('soba zakljucana');
+    document.getElementById('lockButton').style.visibility = 'hidden';
+    document.getElementById('newQuestion').style.visibility = 'visible';
+});
+
+$('#newQuestion').click(function (evt) {
+    io.emit('getQuestion', { roomName : roomName });
 });
 
 io.on('userDisconected', function (data) {

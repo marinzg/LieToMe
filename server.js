@@ -49,6 +49,9 @@ var config = {
     user: "sa",
     password: "n4KmgANB"
 };
+var questionsInRoom = [];
+questionsInRoom["Elfs"] = [];
+questionsInRoom["Random"] = [];
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
@@ -74,6 +77,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/create', function (req, res) {
+    
     res.render('createroom', { title: 'LieToMe Room Create' });
 
 });
@@ -91,8 +95,6 @@ app.get('/rooms/:id', function (req, res) {
     if (rooms.indexOf(req.params.id) === -1) {
         rooms.push(req.params.id);
         console.log(rooms);
-        DMSocket.join(req.params.id);
-        DMSocket.emit('newRoom', { room: req.params.id });
     }
     if (!isInArray(lockedRooms, req.params.id)) {
         //render the room template with the name of the room for the underlying data model
@@ -127,8 +129,8 @@ app.get('/serverRoom/:id', function (req, res) {
     if (rooms.indexOf(req.params.id) === -1) {
         rooms.push(req.params.id);
         console.log(rooms);
+        questionsInRoom[req.params.id] = [];
     }
-    
     //render the room template with the name of the room for the underlying data model
     res.render('serverRoom', { title : req.params.id, username: 'root' });
     
@@ -159,43 +161,12 @@ app.io.route('sendMessage', function (req) {
     });
 });
 app.io.route('lockRoom', function (req) {
-    
-    //lockedRooms.push(req.data.roomName);
-    /*
-    var questions = ['proba'];
-    var conn = new sql.Connection(config);
-    var request = new sql.Request(conn);
-    
-    conn.connect(function (err) {
-        if (err) {
-            console.log(err);
-            return;
-        };
-        request.query("SELECT * FROM Question", function (err, recordset) {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                //questions = recordset;
-                console.log(recordset);
-            }
-            conn.close();
-        });
-    });*/
-    console.log("u server.js sam");
-    req.io.emit('lock', { message: 'bla bla bla' });
-    //app.io.room(req.data.roomName).broadcast('lock', { message: "bla bla" });
     lockedRooms.push(req.data.roomName);
+    sendQuestion(req);
+});
 
-
-    //console.log('roomname=' + req.data.roomName);
-    
-    //req.io.join(req.data.roomName);
-   // req.io.room(req.data.roomName).broadcast('announce', {
-   //     message: "lol",
-   //     username: "root",
-   //     room: req.data.roomName
-   // });
+app.io.route('getQuestion', function (req) {
+    sendQuestion(req);
 });
 /*app.io.route('DMWatching', function (req) {
 	rooms.forEach(function (room) {
@@ -212,6 +183,46 @@ function isInArray(array, obj) {
     for (var i = 0; i < array.length; i++) {
         if (array[i] === obj)
             return true;
+    }
+    return false;
+}
+
+function sendQuestion(req) {
+    var conn = new sql.Connection(config);
+    var request = new sql.Request(conn);
+    
+    
+    conn.connect(function (err) {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        request.query("SELECT * FROM Question", function (err, recordset) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                do {
+                    var x = Math.floor(Math.random() * recordset.length);
+
+                } while (questionsInRoom[req.data.roomName].contains(x));
+                questionsInRoom[req.data.roomName].push(x);
+                req.io.emit('questionSent', { message: recordset[x].question });
+            }
+            conn.close();
+        });
+        //while (wait) {};
+        //console.log(questions);
+        
+    });
+}
+
+Array.prototype.contains = function (obj) {
+    var i = this.length;
+    while (i--) {
+        if (this[i] === obj) {
+            return true;
+        }
     }
     return false;
 }
