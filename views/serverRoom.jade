@@ -1,0 +1,25 @@
+﻿extends layout
+block title
+    //show page title from the title object in underlying model
+    h1.well You are in room named: #{title}
+block content
+    .thumbnail
+        p#question
+    //this well will hold our conversation of the room
+    .thumbnail
+        p#conversation
+    .thumbnail
+        p#console
+    .input-group
+        button#lockButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Lock!
+
+
+    script(src='/javascripts/websockets.js')
+    script(type='text/javascript').
+        var roomName = '#{title}' 
+        //connect to the server using the socket.io front-end js library
+        io
+        
+        //both the room and username is determined from the jade html template
+        //send the a message to the 'ready' route with the room and the username
+        io.emit('userConnected', { room : roomName, username: "root" });

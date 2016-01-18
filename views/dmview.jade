@@ -1,0 +1,22 @@
+﻿extends layout
+block title 
+    .well
+        h1 Hello #{user}
+block content
+    .row#rooms
+        each room in rooms
+            .col-xs-6.col-md-3.col-lg-3
+                .thumbnail(style='height:210px;border: 13px solid #bed5cd;overflow-y: scroll;')
+                    h1= room
+                    p
+    
+        script(src='/javascripts/websockets.js')
+        script.
+            io.emit('DMWatching');
+            io.on('announce', function (data) {
+               var search = "h1:contains(" + data.room + ")";
+               $(search).closest(".thumbnail").append('<p>' + data.username + ': ' + data.message + '</p>');
+            });
+            io.on('newRoom', function (data) {
+               $(".row").append('<div class="col-xs-6 col-md-3 col-lg-3"> <div class="thumbnail" style="height:210px;border: 13px solid #bed5cd;overflow-y: scroll;"> <h1>' +  data.room + '</h1></div></div>' )
+            });

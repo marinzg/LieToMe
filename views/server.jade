@@ -1,0 +1,42 @@
+﻿extends layout
+block content 
+    .row
+        div(style='margin-bottom: 20px;margin-left:auto; margin-right:auto;max-width: 400px')
+            div(style='margin-bottom: 30px;margin-left:auto; margin-right:auto;').well
+                .dropdown
+                    button#dropdownMenu1.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                        | Choose an existing room 
+                        span.caret
+                        |   
+                    ul.dropdown-menu(role='menu', aria-labelledby='dropdownMenu1') 
+                        each room in rooms
+                            li
+                                a()=room
+                            
+                    button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Join!
+            .col-lg-6
+                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Create a new room!
+
+    script(type='text/javascript').
+        var roomName;
+        $('#joinButton').click(function(evt){
+            //window.location will change the browser address to the right hand of the equal sign.
+            //for example a room name 'coolkids' with user Steve 
+            //will set the broswer to [hostname]/rooms/coolkids?username=Steve
+            window.location = 'serverRoom/' + roomName + '?username=root';
+            return;
+        });
+        $('#createButton').click(function(evt){
+            //window.location will change the browser address to the right hand of the equal sign.
+            //for example a room name 'coolkids' with user Steve 
+            //will set the broswer to [hostname]/rooms/coolkids?username=Steve
+            window.location = 'create';
+            return;
+        });
+        $(".dropdown-menu li a").click(function(){
+          roomName= $(this).text();
+          $("#dropdownMenu1").text($(this).text());
+          $("#dropdownMenu1").val($(this).text());
+          $("#dropdownMenu1").addClass("btn-primary");
+
+        });

@@ -1,0 +1,20 @@
+﻿extends layout
+
+block title
+    .jumbotron
+        h1 #{title}
+
+block content
+    .input-group(style='margin-bottom: 30px;margin-left:auto; margin-right:auto;')
+        input#usernameTextBox(type='text' class='form-control' placeholder='Enter your username' style=' max-width: 300px;')
+        input#passwordTextBox(type='password' class='form-control' placeholder='Enter your password' style=' max-width: 300px;')
+        br
+        button#loginButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Login!
+
+
+        script.
+            $('#loginButton').click(function(){
+                $.post("/login",{username: "dana", password: "no"}, function(data){
+               window.location = '/dm/'+ data;
+            });
+            });

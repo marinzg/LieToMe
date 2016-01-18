@@ -1,0 +1,56 @@
+﻿extends layout
+block title
+    .jumbotron
+        h1 LieToMe!
+        p Lie to your friends.
+block content 
+    .row
+        div(style='margin-bottom: 20px;margin-left:auto; margin-right:auto;max-width: 400px')
+            div(style='margin-bottom: 30px;margin-left:auto; margin-right:auto;').well
+                input#usernameTextBox(type='text' class='form-control' placeholder='Enter your username' style=' max-width: 300px;')
+                br
+                .dropdown
+                    button#dropdownMenu1.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                        | Choose an existing room 
+                        span.caret
+                        |   
+                    ul.dropdown-menu(role='menu', aria-labelledby='dropdownMenu1') 
+                        each room in rooms
+                            li
+                                a()=room
+                            
+                    button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Join!
+            .col-lg-6
+                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Create a new room!
+
+    script(type='text/javascript').
+        var roomName;
+        $('#joinButton').click(function(evt){
+            //window.location will change the browser address to the right hand of the equal sign.
+            //for example a room name 'coolkids' with user Steve 
+            //will set the broswer to [hostname]/rooms/coolkids?username=Steve
+            if($('#usernameTextBox').val()=== undefined) alert("ne bu išlo bez imena");
+            else
+            window.location = 'rooms/' + roomName + '?username=' + $('#usernameTextBox').val();
+            return;
+        });
+        $('#createButton').click(function(evt){
+            //window.location will change the browser address to the right hand of the equal sign.
+            //for example a room name 'coolkids' with user Steve 
+            //will set the broswer to [hostname]/rooms/coolkids?username=Steve
+            window.location = 'create';
+            return;
+        });
+        $(".dropdown-menu li a").click(function(){
+          roomName= $(this).text();
+          $("#dropdownMenu1").text($(this).text());
+          $("#dropdownMenu1").val($(this).text());
+          $("#dropdownMenu1").addClass("btn-primary");
+
+        });
+        $(function () {
+        var message = '#{message}';
+        if(message!==''){
+            alert(message);
+        }
+        });

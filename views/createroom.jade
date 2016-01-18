@@ -1,0 +1,19 @@
+﻿extends layout
+block title
+        .well.row
+            h1 Make a custom room
+block content
+        .well
+                input#usernameTextBox(type='text' class='form-control' placeholder='enter your username')
+                br
+                input#roomTextBox(type='text' class='form-control' placeholder='type a room name')
+                button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px;margin-top:20px') Join!
+
+        script.
+            $('#joinButton').click(function(evt){
+            if($('#usernameTextBox').val()=== undefined || $('#usernameTextBox').val()=== "" || $('#usernameTextBox').val()!=='root')
+                alert("ne bu išlo bez pravog imena")
+            else
+                window.location = 'serverRoom/' + $('#roomTextBox').val() + '?username=' + 'root';
+            return;
+            });
