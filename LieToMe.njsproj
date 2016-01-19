@@ -5,6 +5,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>LieToMe</Name>
     <RootNamespace>LieToMe</RootNamespace>
+    <NameOfLastUsedPublishProfile>LieToMe</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -32,6 +33,7 @@
   <ItemGroup>
     <Compile Include="public\javascripts\websockets.js" />
     <Compile Include="server.js" />
+    <None Include="LieToMe.pubxml" />
     <Content Include="public\images\black_cat-128.png" />
     <Content Include="public\images\black_cat-512.png" />
     <Content Include="public\images\conference-128.png" />
