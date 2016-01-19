@@ -10,21 +10,25 @@ io.on('userConnected', function (data) {
 
 io.on('questionSent', function (data) {
     document.getElementById('question').innerHTML = "";
-    //updatePoints
-    /*for (var i in data.users) {
-        document.getElmentById(data.users[i].username).innerHTML = data.users[i].points;
-    };*/
-    
     $('#question').append('<p>' + data.message + '</p>');
+    //updatePoints
+    
+    document.getElementById('leaderBoard').innerHTML = '';
+    $('#leaderBoard').append('<tr> <th> korisnici </th> <th>  bodovi </th> </tr>');
+    for (var i in data.users) {
+        $('#leaderBoard').append('<tr><td>' + data.users[i].username + '</td>  <td id=\"' + data.users[i].username + '\">' + data.users[i].points + '</td></tr>');
+    };
+    
+    
 });
 
 io.on('showUsersAndPoints', function (data) {
     document.getElementById('console').innerHTML = "";
-    $('#console').append('<table> <tr> <th> korisnici </th> <th>  bodovi </th> </tr>');
+    document.getElementById('leaderBoard').style.display = 'block';
+    $('#leaderBoard').append('<tr> <th> korisnici </th> <th>  bodovi </th> </tr>');
     for (var i in data.users) {
-        $('#console').append('<tr><td>'+ data.users[i].username +'</td>  <td id=\"' + data.users[i].username + '\">'+data.users[i].points+'</td></tr>');
+        $('#leaderBoard').append('<tr><td>'+ data.users[i].username +'</td>  <td id=\"' + data.users[i].username + '\">'+data.users[i].points+'</td></tr>');
     };
-    $('#console').append('</table>');
     //for (var i in data.users) {
     //    $('#console').append('<p>' + data.users[i].username + ' ' + data.users[i].points + '</p>');
     //}

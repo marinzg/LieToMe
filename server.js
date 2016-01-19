@@ -346,7 +346,7 @@ function sendQuestion(req) {
                     }
                     else {
                         var users = getUsers(req.data.roomName);
-                        req.io.emit('questionSent', { message: recordset[0].question, users:users });
+                        req.io.emit('questionSent', { message: recordset[0].question, users: users });
                         req.io.room(req.data.roomName).broadcast('clientAddAnswer');
                     } 
                 });
