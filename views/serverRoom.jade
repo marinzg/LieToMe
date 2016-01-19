@@ -6,18 +6,19 @@ block content
     .thumbnail
         p#question
     //this well will hold our conversation of the room
-    .thumbnail
+    .thumbnail(id = "answersHolder" style='display: none')
         p#answers
     .thumbnail
         p#console
     .input-group
         button#lockButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Lock!
-        button#newQuestion(type='button' action='' class='btn btn-default' style='margin-left:10px; visibility:hidden' ) New question
+        button#newQuestion(type='button' action='' class='btn btn-default' style='margin-left:10px; display: none' ) New question
 
 
     script(src='/javascripts/websockets.js')
     script(type='text/javascript').
-        var roomName = '#{title}' 
+        var roomName = '#{title}'
+        var userName = '#{username}' 
         //connect to the server using the socket.io front-end js library
         io
         

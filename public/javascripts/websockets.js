@@ -1,7 +1,7 @@
 ﻿var io = io.connect();
 io.on('announce', function (data) {
-    $('#answers').append('<button style=\'visibility:hidden\'>' + data.message + '</button>');
-
+    $('#answers').append('<button onClick=\"gotAnswer(\'' + data.answer + '\')\">' + data.answer + '</button><p></p>');
+    
 });
 
 io.on('userConnected', function (data) {
@@ -10,12 +10,48 @@ io.on('userConnected', function (data) {
 
 io.on('questionSent', function (data) {
     document.getElementById('question').innerHTML = "";
+    //updatePoints
+    /*for (var i in data.users) {
+        document.getElmentById(data.users[i].username).innerHTML = data.users[i].points;
+    };*/
+    
     $('#question').append('<p>' + data.message + '</p>');
 });
 
-io.on('setQuestion', function (data) {
-    $('#question').append('<p>' + data.message + '</p>');
-    console.log('tu sam');
+io.on('showUsersAndPoints', function (data) {
+    document.getElementById('console').innerHTML = "";
+    $('#console').append('<table> <tr> <th> korisnici </th> <th>  bodovi </th> </tr>');
+    for (var i in data.users) {
+        $('#console').append('<tr><td>'+ data.users[i].username +'</td>  <td id=\"' + data.users[i].username + '\">'+data.users[i].points+'</td></tr>');
+    };
+    $('#console').append('</table>');
+    //for (var i in data.users) {
+    //    $('#console').append('<p>' + data.users[i].username + ' ' + data.users[i].points + '</p>');
+    //}
+});
+
+io.on('clientAddAnswer', function () {
+    document.getElementById('sendButton').style.display = 'block';
+    document.getElementById('chatTextBox').style.display = 'block';
+    document.getElementById('answersHolder').style.display = 'none';
+    document.getElementById('answers').innerHTML = "";
+    
+});
+
+io.on('answersReady', function(data) {
+    /*for (var i in data.answers) {
+        $('#answers').append('<p id=\"' + data.answers[i] + '\">' + data.answers[i] + '</p>');
+    }*/
+    document.getElementById('answersHolder').style.display = 'block';
+});
+
+io.on('allAnswered', function () {
+    //alert('all answered');
+    if (userName === 'root') {
+        //alert('its root');
+        document.getElementById('answers').innerHTML = "";
+        io.emit('getQuestion', { roomName : roomName });
+    }
 });
 
 $('#sendButton').click(function () {
@@ -33,8 +69,8 @@ $('#sendButton').click(function () {
 $('#lockButton').click(function (evt) {
     io.emit('lockRoom', { roomName: roomName });
     alert('soba zakljucana');
-    document.getElementById('lockButton').style.visibility = 'hidden';
-    document.getElementById('newQuestion').style.visibility = 'visible';
+    document.getElementById('lockButton').style.display = 'none';
+    document.getElementById('newQuestion').style.display = 'block';
 });
 
 $('#newQuestion').click(function (evt) {
@@ -45,3 +81,7 @@ io.on('userDisconected', function (data) {
     $('#conversation').append('<p>' + data.username + 'has disconnected. </p>');
         
 });
+function gotAnswer(ans) {
+    //alert('username: ' + user + '   answer: ' + ans);
+    io.emit('answered', { username: userName, answer: ans, room: roomName });
+}
