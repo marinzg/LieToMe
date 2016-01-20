@@ -199,11 +199,10 @@ function isInRoom(atmRoom, atmUser) {
     return false;
 }
 
-function isAnswerCopy(atmRoom, atmAnswer ){
-    for (var i in answeresInRoom[atmRoom]) {
-        if (i === atmAnswer) {
-            console.log(i);
-            console.log(atmAnswer);
+function isAnswerCopy(atmRoom, atmAnswer){
+    for (var i in usersInRoom[atmRoom]) {
+        
+        if (usersInRoom[atmRoom][i].answer === atmAnswer) {
             return true;
         }
     }
@@ -213,12 +212,7 @@ function isAnswerCopy(atmRoom, atmAnswer ){
 app.io.route('sendMessage', function (req) {
     
     var doubleAnswer = isAnswerCopy(req.data.room, req.data.message);
-    
-    console.log("već je netko napisao");
-    console.log(doubleAnswer);
-
-    if (req.data.message === correctAnswerForRoom[req.data.roomName]) {
-        console.log("ovo funkcionira");
+    if (req.data.message === correctAnswerForRoom[req.data.room] || doubleAnswer) {
     }
     
     var answers = [];
