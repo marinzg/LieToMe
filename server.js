@@ -16,7 +16,7 @@ var path = require('path');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var sql = require('mssql');
 var usersInRoom = [];
-
+var numberOfQuestions = 2;
 var rooms = ['Public', 'Elfs', 'Random'];
 var lockedRooms = ['Public'];
 var app = express();
@@ -44,12 +44,12 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    server: "localhost\\MSSQLSERVER",    //MARIN
-    //server: "localhost\\SQLEXPRESS",    //LINA
+   // server: "localhost\\MSSQLSERVER",    //MARIN
+    server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    password: "n4KmgANB"        //MARIN
-    //password : "tbbt"           //LINA
+   // password: "n4KmgANB"        //MARIN
+    password : "tbbt"           //LINA
 };
 
 
@@ -109,6 +109,15 @@ app.get('/about', function (req, res) {
 
 });
 app.get('/rooms/:id', function (req, res) {
+    var doubleUser = isInRoom(req.params.id, req.query.username);
+
+    
+    if (doubleUser) {
+        indexMessage = 'ne bu išlo';
+        res.redirect('home');
+    }
+    
+
     if (rooms.indexOf(req.params.id) === -1) {
         rooms.push(req.params.id);
         console.log(rooms);
@@ -163,28 +172,64 @@ app.get('/serverRoom/:id', function (req, res) {
 
 // Setup the ready route, join room and broadcast to room.
 app.io.route('userConnected', function (req) {
+    var doubleUser = isInRoom(req.data.room, req.data.username);
+    console.log(doubleUser);
+    
     console.log('Recieved real-time ready message from user: ' + req.data.username + ' for room: ' + req.data.room);
     req.io.join(req.data.room);
     req.io.room(req.data.room).broadcast('userConnected', {
-        message: req.data.username + ' just joined the room. ',
-        username: req.data.username
-    });
+            message: req.data.username + ' just joined the room. ',
+            username: req.data.username
+        });
+        
     
 
     usersInRoom[req.data.room][req.data.username] = {answer: "", points: 0};
     //console.log(usersInRoom[req.data.room].length);
     
-    
 });
+
+function isInRoom(atmRoom, atmUser) {
+    
+    for (var i in usersInRoom[atmRoom]) {
+        if (i === atmUser) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isAnswerCopy(atmRoom, atmAnswer ){
+    for (var i in answeresInRoom[atmRoom]) {
+        if (i === atmAnswer) {
+            console.log(i);
+            console.log(atmAnswer);
+            return true;
+        }
+    }
+    return false;
+
+}
 app.io.route('sendMessage', function (req) {
+    
+    var doubleAnswer = isAnswerCopy(req.data.room, req.data.message);
+    
+    console.log("već je netko napisao");
+    console.log(doubleAnswer);
+
+    if (req.data.message === correctAnswerForRoom[req.data.roomName]) {
+        console.log("ovo funkcionira");
+    }
     
     var answers = [];
     console.log('recieved message : ' + req.data.message + ' for room ' + req.data.room + ' from user ' + req.data.username);
     req.io.join(req.data.room);
+    
+    //display correct answer
     if (randomCounterForRoom[req.data.room] === 0) {
-        var questionID = questionsInRoom[req.data.room].pop();
+        var questionID = questionsInRoom[req.data.room].pop(); //dobio id točnog odgovora
         questionsInRoom[req.data.room].push(questionID);
-        answers.push(getRightAnswer(questionID, req));
+        getRightAnswer(questionID, req);
         
         //console.log('right answer sent: ' + correctAnswer);
     };
@@ -346,6 +391,9 @@ function sendQuestion(req) {
                     }
                     else {
                         var users = getUsers(req.data.roomName);
+                        correctAnswerForRoom[req.data.roomName] = recordset[0].answer;
+                        
+
                         req.io.emit('questionSent', { message: recordset[0].question, users: users });
                         req.io.room(req.data.roomName).broadcast('clientAddAnswer');
                     } 
@@ -358,7 +406,7 @@ function sendQuestion(req) {
 }
 
 function getRightAnswer(questionID, req, type) {
-    var conn = new sql.Connection(config);
+    /*var conn = new sql.Connection(config);
     var request = new sql.Request(conn);
     
     conn.connect(function (err) {
@@ -376,15 +424,15 @@ function getRightAnswer(questionID, req, type) {
             else {
                 console.log(recordset[0].answer);
                 correctAnswerForRoom[req.data.room] = recordset[0].answer;
-                console.log('correct answer: ' + correctAnswerForRoom[req.data.room]);
+                console.log('correct answer: ' + correctAnswerForRoom[req.data.room]);*/
                 req.io.room(req.data.room).broadcast('announce', {
-                    answer: recordset[0].answer,
+                    answer: correctAnswerForRoom[req.data.room],
                     i: 'root',
                 });
                 req.io.emit('announce', {
-                    answer: recordset[0].answer,
+                    answer: correctAnswerForRoom[req.data.room],
                     i: 'root'
-                });
+                });/*
                 
                 
                 console.log('returning: ' + recordset[0].answer);
@@ -393,8 +441,9 @@ function getRightAnswer(questionID, req, type) {
             conn.close();
         });
     });
-    return '';
+    return '';*/
 }
+
 
 function getUsers(roomName) {
     var users = [];
