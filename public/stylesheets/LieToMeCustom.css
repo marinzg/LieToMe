@@ -1,6 +1,33 @@
 ﻿p.question {
-    color:gold
+    font-size: 25px;
+    color:#000000
 }
+
+p.answer {
+    color:#000000
+}
+/*user joined room*/
+p{margin:0 0 10px; color:black}
+
+.jumbotron p{margin-bottom:15px;font-size:21px;font-weight:200;color:#adafad}
+
+
+table.liveLeaderBoard th{
+    height: 30px;
+    width: 100px;
+    text-align:center
+}
+
+table.liveLeaderBoard tr {
+    text-align:center
+}
+
+table.liveLeaderBoard tbody{
+    width:100%;
+    color:black
+}
+
+.btn-default{color:#ffffff;background-color:#adafad;border-color:#adafad}
 
 /*Slova u navbaru*/
 .navbar-default .navbar-brand{
@@ -9,15 +36,60 @@
 
 /*navbar*/
 .navbar-default{
-    background-color:gold;
-    border-color:#ffffff
+    background-color:#86190c;
+    border-color:#86190c
 }
 /*select room button dropdown*/
-
+.btn-primary{
+    color:#ffffff;
+    background-color:#000000;
+    border-color:#000000
+}
 
 /*select room button dropdown hoover*/
 .btn-primary:hover,.btn-primary:focus,.btn-primary.focus,.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{
     color:#ffffff;
     background-color:#000000;
-    border-color:#a5360f
+    border-color:#000000
 }
+
+/*select room dropdown*/
+.dropdown-menu>li>a:hover,.dropdown-menu>li>a:focus{
+    text-decoration:none;
+    color:#ffffff;
+    background-color:#ccc
+}
+
+/*answer button*/
+
+button.answer {
+   border-top: 1px solid #ffffff;
+   background: #ffffff;
+   background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ffffff));
+   background: -webkit-linear-gradient(top, #ffffff, #ffffff);
+   background: -moz-linear-gradient(top, #ffffff, #ffffff);
+   background: -o-linear-gradient(top, #ffffff, #ffffff);
+   padding: 7px 14px;
+   -webkit-border-radius: 40px;
+   -moz-border-radius: 40px;
+   border-radius: 40px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: #000000;
+   font-size: 12px;
+   font-family: Helvetica, Arial, Sans-Serif;
+   text-decoration: none;
+   vertical-align: middle;
+   }
+button.answer:hover {
+   border-top-color: #28597a;
+   background: #28597a;
+   color: #ccc;
+   }
+button.answer:active {
+   border-top-color: #5c1b1b;
+   background: #5c1b1b;
+   }
+

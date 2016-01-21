@@ -7,8 +7,8 @@
 
 
 io.on('announce', function (data) {
-    $('#answers').append('<button onClick=\"gotAnswer(\'' + data.answer + '\')\">' + data.answer + '</button><p></p>');
-    $('#answersList').append('<p">' + data.answer + '</p>');
+    $('#answers').append('<button class="btn btn-default" onClick=\"gotAnswer(\'' + data.answer + '\')\">' + data.answer + '</button><p></p>');
+    $('#answersList').append('<p class="answer">' + data.answer + '</p>');
 });
 
 io.on('userConnected', function (data) {
@@ -22,23 +22,25 @@ io.on('questionSent', function (data) {
         document.getElementById('questionHolder').style.display = 'block';
     document.getElementById('question').innerHTML = "";
     $('#question').append('<p class="question">' + data.message + '</p>');
-    //updatePoints
     
     document.getElementById('leaderBoard').innerHTML = '';
-    $('#leaderBoard').append('<tr> <th> korisnici </th> <th>  bodovi </th> </tr>');
+    if (document.getElementById('consoleHolder').style.display === 'none')
+        document.getElementById('consoleHolder').style.display = 'block';
+    $('#leaderBoard').append('<tr><th>korisnici</th><th>bodovi</th></tr>');
     for (var i in data.users) {
-        $('#leaderBoard').append('<tr><td>' + data.users[i].username + '</td>  <td id=\"' + data.users[i].username + '\">' + data.users[i].points + '</td></tr>');
+        $('#leaderBoard').append('<tr><td>' + data.users[i].username + '</td>  <td >' + data.users[i].points + '</td></tr>');
     };
     
-    
+    document.getElementById('answersHolder').style.display = 'none';
 });
 
 io.on('showUsersAndPoints', function (data) {
     document.getElementById('console').innerHTML = "";
+    document.getElementById('console').style.display = 'none';
     document.getElementById('leaderBoard').style.display = 'block';
-    $('#leaderBoard').append('<tr> <th> korisnici </th> <th>  bodovi </th> </tr>');
+    $('#leaderBoard').append('<tr><th>korisnici</th><th >bodovi</th></tr>');
     for (var i in data.users) {
-        $('#leaderBoard').append('<tr><td>'+ data.users[i].username +'</td>  <td id=\"' + data.users[i].username + '\">'+data.users[i].points+'</td></tr>');
+        $('#leaderBoard').append('<tr><td>'+ data.users[i].username +'</td>  <td>'+data.users[i].points+'</td></tr>');
     };
     //for (var i in data.users) {
     //    $('#console').append('<p>' + data.users[i].username + ' ' + data.users[i].points + '</p>');
@@ -46,12 +48,12 @@ io.on('showUsersAndPoints', function (data) {
 });
 
 io.on('clientAddAnswer', function () {
+    spinner.stop(target);
+    
     document.getElementById('sendButton').style.display = 'block';
     document.getElementById('chatTextBox').style.display = 'block';
-    document.getElementById('answersHolder').style.display = 'none';
     document.getElementById('answers').innerHTML = "";
     document.getElementById('answersList').innerHTML = "";
-    
 });
 
 io.on('answersReady', function(data) {
@@ -59,6 +61,7 @@ io.on('answersReady', function(data) {
         $('#answers').append('<p id=\"' + data.answers[i] + '\">' + data.answers[i] + '</p>');
     }*/
     document.getElementById('answersHolder').style.display = 'block';
+    spinner.stop(target);
 });
 
 io.on('allAnswered', function () {
@@ -71,13 +74,23 @@ io.on('allAnswered', function () {
 });
 
 $('#sendButton').click(function () {
-    
     var messageText = $('#chatTextBox').val();
-    if (messageText === "" || messageText === "undefined") alert("Nije dozvoljen prazan unos!");
-    else {
+    if (messageText === "" || messageText === "undefined") { 
+        alert("Nije dozvoljen prazan unos!");
+    } else {
+        document.getElementById('sendButton').style.display = 'none';
+        document.getElementById('chatTextBox').style.display = 'none';
         var messagePayload = { message: messageText, room: roomName, username: userName };
         io.emit('sendMessage', messagePayload);
         $('#chatTextBox').val(''); //clears the message text box
+        document.getElementById('spin').style.display = 'block';
+        spinner.spin(target);
+
+
+
+
+
+
       //  $('#conversation').append('<button style="color: rgb(191, 62, 17)">' + messagePayload.message + '</button>'); ///adds  message to conversation
     }
 });
@@ -98,6 +111,8 @@ io.on('userDisconected', function (data) {
         
 });
 function gotAnswer(ans) {
-    //alert('username: ' + user + '   answer: ' + ans);
+    document.getElementById('answersHolder').style.display = 'none';
+    spinner.spin(target);
+    //document.getElementById('spin').style.display = 'block';
     io.emit('answered', { username: userName, answer: ans, room: roomName });
 }
