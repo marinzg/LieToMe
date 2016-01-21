@@ -44,12 +44,12 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    server: "localhost\\MSSQLSERVER",    //MARIN
-    //server: "localhost\\SQLEXPRESS",    //LINA
+    //server: "localhost\\MSSQLSERVER",    //MARIN
+    server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    password: "n4KmgANB"        //MARIN
-    //password : "tbbt"           //LINA
+    //password: "n4KmgANB"        //MARIN
+    password : "tbbt"           //LINA
 };
 
 
@@ -139,6 +139,13 @@ app.get('/rooms/:id', function (req, res) {
 
 app.get('/server', function (req, res) {
     
+    if (indexMessage !== '') {
+        indexMessage = '';
+        res.render('server', { rooms: rooms, message: 'ne bu išlo' });
+    } else {
+        res.render('server', { rooms: rooms, message: '' });
+    }
+    
     res.render('server', { rooms: rooms });
 });
 app.get('/home', function (req, res) {
@@ -152,6 +159,12 @@ app.get('/home', function (req, res) {
 });
 
 app.get('/serverRoom/:id', function (req, res) {
+    
+    if (isInArray(lockedRooms, req.params.id)) {
+        indexMessage = 'ne bu išlo';
+        res.redirect('server');
+    }
+
     if (rooms.indexOf(req.params.id) === -1) {
         rooms.push(req.params.id);
         console.log(rooms);

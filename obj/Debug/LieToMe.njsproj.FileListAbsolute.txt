@@ -1,1 +1,3 @@
 C:\Users\WIN-MBP\Documents\Visual Studio 2015\WebSites\LieToMe\bin\Microsoft.NodejsTools.WebRole.dll
+C:\Users\Lina\Source\Repos\LieToMe\obj\Debug\LieToMe.njsprojResolveAssemblyReference.cache
+C:\Users\Lina\Source\Repos\LieToMe\bin\Microsoft.NodejsTools.WebRole.dll
