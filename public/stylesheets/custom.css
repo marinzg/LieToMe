@@ -204,7 +204,7 @@ td,th{padding:0}
 
 
 .glyphicon{position:relative;top:1px;display:inline-block;font-family:'Glyphicons Halflings';font-style:normal;font-weight:normal;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-
+.glyphicon-voice:before{content:"\e594"}
 
 .glyphicon-asterisk:before{content:"\2a"}
 
@@ -739,7 +739,7 @@ h3,.h3{font-size:24px}
 h4,.h4{font-size:18px}
 h5,.h5{font-size:14px}
 h6,.h6{font-size:12px}
-p{margin:0 0 10px; color:blueviolet}
+/*p{margin:0 0 10px; color:blueviolet}*/
 .lead{margin-bottom:20px;font-size:16px;font-weight:300;line-height:1.4}
 
 @media (min-width:768px){.lead{font-size:21px}
@@ -1172,7 +1172,7 @@ textarea.form-group-lg .form-control,select[multiple].form-group-lg .form-contro
 .btn:hover,.btn:focus,.btn.focus{color:#ffffff;text-decoration:none}
 .btn:active,.btn.active{outline:0;background-image:none;-webkit-box-shadow:inset 0 3px 5px rgba(0,0,0,0.125);box-shadow:inset 0 3px 5px rgba(0,0,0,0.125)}
 .btn.disabled,.btn[disabled],fieldset[disabled] .btn{cursor:not-allowed;pointer-events:none;opacity:0.65;filter:alpha(opacity=65);-webkit-box-shadow:none;box-shadow:none}
-.btn-default{color:#ffffff;background-color:#aea79f;border-color:#aea79f}
+/*.btn-default{color:#ffffff;background-color:#aea79f;border-color:#aea79f}*/
 .btn-default:hover,.btn-default:focus,.btn-default.focus,.btn-default:active,.btn-default.active,.open>.dropdown-toggle.btn-default{color:#ffffff;background-color:#978e83;border-color:#92897e}
 .btn-default:active,.btn-default.active,.open>.dropdown-toggle.btn-default{background-image:none}
 .btn-default.disabled,.btn-default[disabled],fieldset[disabled] .btn-default,.btn-default.disabled:hover,.btn-default[disabled]:hover,fieldset[disabled] .btn-default:hover,.btn-default.disabled:focus,.btn-default[disabled]:focus,fieldset[disabled] .btn-default:focus,.btn-default.disabled.focus,.btn-default[disabled].focus,fieldset[disabled] .btn-default.focus,.btn-default.disabled:active,.btn-default[disabled]:active,fieldset[disabled] .btn-default:active,.btn-default.disabled.active,.btn-default[disabled].active,fieldset[disabled] .btn-default.active{background-color:#aea79f;border-color:#aea79f}
@@ -1552,7 +1552,7 @@ a.badge:hover,a.badge:focus{color:#ffffff;text-decoration:none;cursor:pointer}
 
 .jumbotron{padding:30px 15px;margin-bottom:30px;color:peru;background-color:#eeeeee}/*pozadina siva*/
 .jumbotron h1,.jumbotron .h1{color:black} /*LieToMe*/
-.jumbotron p{margin-bottom:15px;font-size:21px;font-weight:200;color:red}
+/*.jumbotron p{margin-bottom:15px;font-size:21px;font-weight:200;color:red}*/
 
 .jumbotron>hr{border-top-color:#d5d5d5}
 .container .jumbotron,.container-fluid .jumbotron{border-radius:6px}
@@ -1659,7 +1659,7 @@ a.list-group-item-danger.active,a.list-group-item-danger.active:hover,a.list-gro
 
 
 
-.panel-heading>.dropdown .dropdown-toggle{color:lightpink}
+.panel-heading>.dropdown .dropdown-toggle{color:blueviolet}
 
 
 

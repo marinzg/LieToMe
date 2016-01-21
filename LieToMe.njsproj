@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="public\javascripts\websockets.js" />
     <Compile Include="server.js" />
+    <Compile Include="Spin.js" />
     <None Include="LieToMe.pubxml" />
     <Content Include="public\images\black_cat-128.png" />
     <Content Include="public\images\black_cat-512.png" />
@@ -40,6 +41,7 @@
     <Content Include="public\images\conference-256.png" />
     <Content Include="public\images\glasses-32.png" />
     <Content Include="public\images\glasses-64.png" />
+    <Content Include="public\images\glyphicons-594-voice.png" />
     <Content Include="public\images\key-26.png" />
     <Content Include="public\images\key-48.png" />
     <Content Include="public\images\key-64.png" />

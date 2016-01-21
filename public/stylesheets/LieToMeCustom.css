@@ -1,11 +1,15 @@
 ﻿p.question {
-    color:gold
+    font-size: 25px;
+    color:#000000
 }
 
 p.answer {
-    color:pink
+    color:#000000
 }
+/*user joined room*/
+p{margin:0 0 10px; color:black}
 
+.jumbotron p{margin-bottom:15px;font-size:21px;font-weight:200;color:#adafad}
 
 
 table.liveLeaderBoard th{
@@ -20,7 +24,10 @@ table.liveLeaderBoard tr {
 
 table.liveLeaderBoard tbody{
     width:100%;
+    color:black
 }
+
+.btn-default{color:#ffffff;background-color:#adafad;border-color:#adafad}
 
 /*Slova u navbaru*/
 .navbar-default .navbar-brand{
@@ -29,28 +36,28 @@ table.liveLeaderBoard tbody{
 
 /*navbar*/
 .navbar-default{
-    background-color:gold;
-    border-color:#ffffff
+    background-color:#86190c;
+    border-color:#86190c
 }
 /*select room button dropdown*/
 .btn-primary{
     color:#ffffff;
-    background-color:#c09853;
-    border-color:#c09853
+    background-color:#000000;
+    border-color:#000000
 }
 
 /*select room button dropdown hoover*/
 .btn-primary:hover,.btn-primary:focus,.btn-primary.focus,.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{
     color:#ffffff;
     background-color:#000000;
-    border-color:#a5360f
+    border-color:#000000
 }
 
 /*select room dropdown*/
 .dropdown-menu>li>a:hover,.dropdown-menu>li>a:focus{
     text-decoration:none;
     color:#ffffff;
-    background-color:#468847
+    background-color:#ccc
 }
 
 /*answer button*/
@@ -85,3 +92,4 @@ button.answer:active {
    border-top-color: #5c1b1b;
    background: #5c1b1b;
    }
+

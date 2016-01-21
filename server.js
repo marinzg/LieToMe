@@ -89,13 +89,13 @@ if ('development' == app.get('env')) {
 }
 app.get('/', function (req, res) {
     
-    res.render('index');
+    res.render('index', { title: 'LieToMe'});
 
 });
 
 app.get('/create', function (req, res) {
     
-    res.render('createroom', { title: 'LieToMe Room Create' });
+    res.render('createroom', { title: 'LieToMe' });
 
 });
 /*app.get('/login', function (req, res) {
@@ -139,7 +139,7 @@ app.get('/rooms/:id', function (req, res) {
 
 app.get('/server', function (req, res) {
     
-    res.render('server', { rooms: rooms });
+    res.render('server', { title: 'LieToMe', rooms: rooms });
 });
 app.get('/home', function (req, res) {
     
@@ -385,7 +385,7 @@ function sendQuestion(req) {
                         console.log(err);
                     }
                     else {
-                        var users = getUsers(req.data.roomName);
+                        var users = getUsers(req.data.roomName).sort(function (a, b) { return b.points - a.points});
                         correctAnswerForRoom[req.data.roomName] = recordset[0].answer;
                         
 

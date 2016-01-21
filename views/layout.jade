@@ -8,6 +8,7 @@ html
     link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css')
     script(src='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js')
+    script(src="//cdnjs.cloudflare.com/ajax/libs/spin.js/1.2.7/spin.min.js")
     link(rel='stylesheet', href='/stylesheets/custom.css')
     link(rel='stylesheet', href='/stylesheets/LieToMeCustom.css')
     
@@ -23,7 +24,7 @@ html
                             span.icon-bar
                             span.icon-bar
                         a(class='navbar-brand', href='/') 
-                            span.glyphicon.glyphicon-comment
+                            &#9749;
                             &nbsp;&nbsp; LieToMe
                     #bs-example-navbar-collapse-1(class='collapse navbar-collapse')
                         ul(class='nav navbar-nav')
@@ -32,3 +33,5 @@ html
                     block title
         
         block content
+
+        //img(src='/images/glyphicons-594-voice.png' align='left') \n &nbsp;&nbsp; LieToMe 
