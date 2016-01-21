@@ -31,7 +31,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="public\javascripts\websockets.js" />
+    <Compile Include="views\websockets.js" />
     <Compile Include="server.js" />
     <None Include="LieToMe.pubxml" />
     <Content Include="public\images\black_cat-128.png" />
