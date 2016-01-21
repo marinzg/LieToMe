@@ -1,0 +1,23 @@
+﻿p.question {
+    color:gold
+}
+
+/*Slova u navbaru*/
+.navbar-default .navbar-brand{
+    color:#ffffff
+}
+
+/*navbar*/
+.navbar-default{
+    background-color:gold;
+    border-color:#ffffff
+}
+/*select room button dropdown*/
+
+
+/*select room button dropdown hoover*/
+.btn-primary:hover,.btn-primary:focus,.btn-primary.focus,.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{
+    color:#ffffff;
+    background-color:#000000;
+    border-color:#a5360f
+}

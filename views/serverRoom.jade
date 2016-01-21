@@ -1,18 +1,27 @@
 ﻿extends layout
 block title
-    //show page title from the title object in underlying model
-    h1.well You are in room named: #{title}
+    .well
+        table(style='width:100%')
+            tr
+                td(style='width:30%' valign="center")
+                    h1(style="margin-top:5px") #{title}
+                td(align='center' valign="center")
+                    .thumbnail(id='consoleHolder' style="margin-left:50%;margin-bottom:0%; display:none; margin-top:5px" valign="center")
+                        p#console
+                            table(id="leaderBoard", style="display: none")
+     
+        //show page title from the title object in underlying model
+        
+        
 block content
-    .thumbnail
-        p#question
+    .thumbnail(id = 'questionHolder' style="display:none")
+        p(class="question")#question
     //this well will hold our conversation of the room
     .thumbnail(id = "answersHolder" style='display: none')
-        p#answers
-    .thumbnail
-        p#console
-            table(id="leaderBoard", style="display: none")
+        p#answersList
+    
     .input-group
-        button#lockButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Lock!
+        button#lockButton(type='button' action='' class='btn btn-default' style='margin-left:10px') &#x1f512; Lock!
         button#newQuestion(type='button' action='' class='btn btn-default' style='margin-left:10px; display: none' ) New question
 
 

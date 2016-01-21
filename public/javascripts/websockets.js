@@ -1,16 +1,27 @@
 ﻿var io = io.connect();
+/*
+ *  put answers on server not as buttons
+ *  hide answes on server until all answered 
+ * 
+ */
+
+
 io.on('announce', function (data) {
     $('#answers').append('<button onClick=\"gotAnswer(\'' + data.answer + '\')\">' + data.answer + '</button><p></p>');
-    
+    $('#answersList').append('<p">' + data.answer + '</p>');
 });
 
 io.on('userConnected', function (data) {
+    if (document.getElementById('consoleHolder').style.display === 'none')
+        document.getElementById('consoleHolder').style.display = 'block';
     $('#console').append('<p>' + data.message + '</p>');
 });
 
 io.on('questionSent', function (data) {
+    if (document.getElementById('questionHolder').style.display === 'none')
+        document.getElementById('questionHolder').style.display = 'block';
     document.getElementById('question').innerHTML = "";
-    $('#question').append('<p>' + data.message + '</p>');
+    $('#question').append('<p class="question">' + data.message + '</p>');
     //updatePoints
     
     document.getElementById('leaderBoard').innerHTML = '';
@@ -39,6 +50,7 @@ io.on('clientAddAnswer', function () {
     document.getElementById('chatTextBox').style.display = 'block';
     document.getElementById('answersHolder').style.display = 'none';
     document.getElementById('answers').innerHTML = "";
+    document.getElementById('answersList').innerHTML = "";
     
 });
 
@@ -53,7 +65,7 @@ io.on('allAnswered', function () {
     //alert('all answered');
     if (userName === 'root') {
         //alert('its root');
-        document.getElementById('answers').innerHTML = "";
+        document.getElementById('answersList').innerHTML = "";
         io.emit('getQuestion', { roomName : roomName });
     }
 });

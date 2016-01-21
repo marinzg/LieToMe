@@ -50,6 +50,7 @@
     <Content Include="public\images\witch-26.png" />
     <Content Include="public\images\witch-32.png" />
     <Content Include="public\stylesheets\custom.css" />
+    <Content Include="public\stylesheets\LieToMeCustom.css" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="views\about.jade" />
     <Content Include="views\createroom.jade" />
