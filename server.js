@@ -44,12 +44,14 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    //server: "localhost\\MSSQLSERVER",    //MARIN
-    server: "localhost\\SQLEXPRESS",    //LINA
+    server: "localhost\\MSSQLSERVER",    //MARIN
+ //   server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    //password: "n4KmgANB"        //MARIN
-    password : "tbbt"           //LINA
+    password: "n4KmgANB"        //MARIN
+   // password : "tbbt"           //LINA
+   //   password: "projekt"          //MARTINA
+
 };
 
 
@@ -59,7 +61,7 @@ questionsInRoom["Random"] = [];
 usersInRoom["Elfs"] = [];
 usersInRoom["Random"] = [];
 
-var randomCounterForRoom = [];
+//var randomCounterForRoom = [];
 //randomCounterForRoom["Elfs"] = 0;
 //randomCounterForRoom["Random"] = 0;
 
@@ -170,7 +172,7 @@ app.get('/serverRoom/:id', function (req, res) {
         console.log(rooms);
         questionsInRoom[req.params.id] = [];
         usersInRoom[req.params.id] = [];
-        randomCounterForRoom[req.params.id] = 0;
+        //randomCounterForRoom[req.params.id] = 0;
         answeresInRoom[req.params.id] = 0;
     }
     //render the room template with the name of the room for the underlying data model
@@ -207,44 +209,22 @@ function isInRoom(atmRoom, atmUser) {
     return false;
 }
 
-function isAnswerCopy(atmRoom, atmAnswer){
-    for (var i in usersInRoom[atmRoom]) {
-        
-        if (usersInRoom[atmRoom][i].answer === atmAnswer) {
-            return true;
-        }
-    }
-    return false;
 
-}
 app.io.route('sendMessage', function (req) {
     
-    var doubleAnswer = isAnswerCopy(req.data.room, req.data.message);
-    if (req.data.message === correctAnswerForRoom[req.data.room] || doubleAnswer) {
-    }
-    
+    if (req.data.message.toUpperCase() === correctAnswerForRoom[req.data.room].toUpperCase()) {
+        req.io.emit('wrongInput');
+        return;
+    };
+    req.io.emit('correctInput');
     var answers = [];
     
     req.io.join(req.data.room);
     
-    //display correct answer
-    if (randomCounterForRoom[req.data.room] === 0) {
-        var questionID = questionsInRoom[req.data.room].pop(); //dobio id točnog odgovora
-        questionsInRoom[req.data.room].push(questionID);
-        getRightAnswer(questionID, req);
-        
-        //console.log('right answer sent: ' + correctAnswer);
-    };
-    randomCounterForRoom[req.data.room]--;
-    req.io.room(req.data.room).broadcast('announce', {
-        answer: req.data.message,
-        i: req.data.username,
-    });
     var user = usersInRoom[req.data.room][req.data.username];
     usersInRoom[req.data.room][req.data.username] = { answer: req.data.message, points: user.points }; //u bodovanju prebrisati odgovore
     var counterUserInRoom = -1;
     var counterAnswerInRoom = 0;
-    var answers = [];
     
     for (var i in usersInRoom[req.data.room]) {
         counterUserInRoom++;
@@ -262,11 +242,15 @@ app.io.route('sendMessage', function (req) {
     if (counterUserInRoom === counterAnswerInRoom) {
         console.log("svi su odgovorili");
         
+
+        var randomizedUsersInRoom = randomizeUsersInRoom(req.data.room);
+        
+
         req.io.room(req.data.room).broadcast('answersReady', {
-            answers: answers
+            users : randomizedUsersInRoom
         });
         req.io.emit('answersReady', {
-            answers: answers
+            users : randomizedUsersInRoom
         });
         
     }
@@ -322,11 +306,10 @@ app.io.route('answered', function (req) {
     } else {
         console.log('user ' + req.data.username + ' answered incorrectly');
         for (var i in usersInRoom[req.data.room]) {
-            if (usersInRoom[req.data.room][i].answer === req.data.answer) {
+            if (usersInRoom[req.data.room][i].answer === req.data.answer && i !== req.data.username) {
                 user = usersInRoom[req.data.room][i];
                 usersInRoom[req.data.room][i] = { answer: user.answer, points: (user.points + correctAnswerPoints) };
                 console.log('user ' + i + ' gets points for lying');
-                break;
             }
         }
     }
@@ -369,8 +352,8 @@ function sendQuestion(req) {
     console.log('users in room: ' + objectsInArray(usersInRoom[req.data.roomName]));
     var rnd = (Math.floor(Math.random() * objectsInArray(usersInRoom[req.data.roomName])));
     console.log(rnd);
-    randomCounterForRoom[req.data.roomName] = rnd;
-    console.log('rcfr: ' + randomCounterForRoom[req.data.roomName]);
+    //randomCounterForRoom[req.data.roomName] = rnd;
+    //console.log('rcfr: ' + randomCounterForRoom[req.data.roomName]);
     
 
     conn.connect(function (err) {
@@ -393,7 +376,6 @@ function sendQuestion(req) {
                 } while (contains);
                 console.log("izašo sam iz vajl petlje");
                 questionsInRoom[req.data.roomName].push(x);
-                //console.log("SELECT * FROM Question WHERE questionID = " + x.toString());
                 request.query("SELECT * FROM Question WHERE questionID = " + x.toString(), function (err, recordset) {
                     if (err) {
                         console.log(err);
@@ -463,3 +445,76 @@ function getUsers(roomName) {
     }
     return users;
 }
+
+function isAnswerCopy(atmRoom, atmAnswer) {
+    for (var i in usersInRoom[atmRoom]) {
+        if (usersInRoom[atmRoom][i].answer === atmAnswer) {
+            console.log(i);
+            console.log(atmAnswer);
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+function randomizeArray(array) {
+    var newIndex = 0;
+    var oldValue = "";
+    for (var i = 0; i < array.length; i++) {
+        newIndex = Math.floor(Math.random() * array.length);
+        oldValue = array[i];
+        array[i] = array[newIndex];
+        array[newIndex] = oldValue;
+    }
+}
+
+function randomizeUsersInRoom(room) {
+    var usernames = [];
+    var usersInRoomRandomized = [];
+    var answers = [];
+    var blockedUsernames = [];
+    var sameAnswerCounter = 0;
+    console.log('randomiziram sobu: ' + room);
+    for (var i in usersInRoom[room]) {
+        usernames.push(i);
+        if (typeof blockedUsernames[usersInRoom[room][i].answer.toUpperCase()] === 'undefined') 
+            blockedUsernames[usersInRoom[room][i].answer.toUpperCase()] = [i];
+        else {
+            blockedUsernames[usersInRoom[room][i].answer.toUpperCase()].push(i);
+            sameAnswerCounter++;
+        }
+    }
+    console.log(blockedUsernames);
+    randomizeArray(usernames);
+    console.log('randomizirani usernameovi: ' + usernames);
+    
+    var arrayLength = usernames.length - sameAnswerCounter - 2;
+    console.log('arrayLenght: ' + arrayLength);
+    var indexForCorrectAnswer = Math.floor(Math.random() * arrayLength);
+
+    for (var i = 0; i < usernames.length; i++) {
+        var answer = usersInRoom[room][usernames[i]].answer;
+        if (isInArray(answers, answer)) {
+            answer = '';
+        } else {
+            answers.push(answer);
+        }
+        if(i === indexForCorrectAnswer)
+            usersInRoomRandomized.push({ username: '', answer: correctAnswerForRoom[room] });
+        if (answer !== '' && usernames[i] !== 'root') {
+            console.log('količina istih odgovora: ' + blockedUsernames[answer.toUpperCase()].length);
+            if (blockedUsernames[answer.toUpperCase()].length > 1) {
+                usersInRoomRandomized.push({ username: '', answer: answer });
+            } else {
+                usersInRoomRandomized.push({ username: usernames[i], answer: answer });
+            }
+            
+        };
+        
+    }
+    
+    console.log(usersInRoomRandomized);
+    return usersInRoomRandomized;
+};

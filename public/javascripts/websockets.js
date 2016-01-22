@@ -7,8 +7,8 @@
 
 
 io.on('announce', function (data) {
-    $('#answers').append('<button class="btn btn-default" onClick=\"gotAnswer(\'' + data.answer + '\')\">' + data.answer + '</button><p></p>');
-    $('#answersList').append('<p class="answer">' + data.answer + '</p>');
+    //$('#answers').append('<button class="btn btn-default" onClick=\"gotAnswer(\'' + data.answer + '\')\">' + data.answer + '</button><p></p>');
+    //$('#answersList').append('<p class="answer">' + data.answer + '</p>');
 });
 
 io.on('userConnected', function (data) {
@@ -49,17 +49,22 @@ io.on('showUsersAndPoints', function (data) {
 
 io.on('clientAddAnswer', function () {
     spinner.stop(target);
-    
     document.getElementById('sendButton').style.display = 'block';
     document.getElementById('chatTextBox').style.display = 'block';
     document.getElementById('answers').innerHTML = "";
     document.getElementById('answersList').innerHTML = "";
 });
 
-io.on('answersReady', function(data) {
-    /*for (var i in data.answers) {
-        $('#answers').append('<p id=\"' + data.answers[i] + '\">' + data.answers[i] + '</p>');
-    }*/
+io.on('answersReady', function (data) {
+    for (var i in data.users) {
+        var user = data.users[i];
+        //alert(user.username + ' === ' + userName + '->' +user.username.localeCompare(userName) + ' '+ user.answer + ' cmp (ništa) ' + user.answer.localeCompare(''));
+        if (user.username.localeCompare(userName)) {
+            $('#answers').append('<button class="btn btn-default" onClick=\"gotAnswer(\'' + user.answer + '\')\">' + user.answer + '</button><p></p>');
+        }
+        //$('#answers').append('<button class="btn btn-default" onClick=\"gotAnswer(\'' + data.answers[i].answer + '\')\">' + data.answers[i].answer + '</button><p></p>');
+        $('#answersList').append('<p class="answer">' + user.answer + '</p>');
+    };
     document.getElementById('answersHolder').style.display = 'block';
     spinner.stop(target);
 });
@@ -87,25 +92,32 @@ io.on('roomChecked', function (message) {
     }
 });
 
+io.on('allSubmitedAnswer', function (data) {
+    for (var i in data.answers) {
+        $('#answers').append('<button class="btn btn-default" onClick=\"gotAnswer(\'' + data.answers[i].answer + '\')\">' + data.answers[i].answer + '</button><p></p>');
+        $('#answersList').append('<p class="answer">' + data.answers[i].answer + '</p>');
+    };
+});
+
+io.on('wrongInput', function () {
+    alert('Odgovor je istinit, unesite novi odgovor!');
+    $('#chatTextBox').val(''); //clears the message text box
+});
+io.on('correctInput', function () { 
+    document.getElementById('sendButton').style.display = 'none';
+    document.getElementById('chatTextBox').style.display = 'none';
+    $('#chatTextBox').val(''); //clears the message text box
+    document.getElementById('spin').style.display = 'block';
+    spinner.spin(target);
+});
+
 $('#sendButton').click(function () {
     var messageText = $('#chatTextBox').val();
     if (messageText === "" || messageText === "undefined") { 
         alert("Nije dozvoljen prazan unos!");
     } else {
-        document.getElementById('sendButton').style.display = 'none';
-        document.getElementById('chatTextBox').style.display = 'none';
         var messagePayload = { message: messageText, room: roomName, username: userName };
         io.emit('sendMessage', messagePayload);
-        $('#chatTextBox').val(''); //clears the message text box
-        document.getElementById('spin').style.display = 'block';
-        spinner.spin(target);
-
-
-
-
-
-
-      //  $('#conversation').append('<button style="color: rgb(191, 62, 17)">' + messagePayload.message + '</button>'); ///adds  message to conversation
     }
 });
 
@@ -119,6 +131,8 @@ $('#lockButton').click(function (evt) {
 $('#newQuestion').click(function (evt) {
     io.emit('getQuestion', { roomName : roomName });
 });
+
+
 
 io.on('userDisconected', function (data) {
     $('#conversation').append('<p>' + data.username + 'has disconnected. </p>');
