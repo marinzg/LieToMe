@@ -73,6 +73,15 @@ io.on('allAnswered', function () {
     }
 });
 
+io.on('roomChecked', function (message) {
+    if (message === 'ok') {
+        window.location = 'serverRoom/' + $('#roomTextBox').val() + '?username=' + 'root';
+    } else {
+        alert("Soba već postoji");
+        $('#roomTextBox').val("");
+    }
+});
+
 $('#sendButton').click(function () {
     var messageText = $('#chatTextBox').val();
     if (messageText === "" || messageText === "undefined") { 

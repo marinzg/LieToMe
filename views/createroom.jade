@@ -1,19 +1,20 @@
 ﻿extends layout
 block title
         .well.row
-            h1 Make a custom room
+            h1 Napravi novu sobu
 block content
         .well
-                input#usernameTextBox(type='text' class='form-control' placeholder='enter your username')
-                br
-                input#roomTextBox(type='text' class='form-control' placeholder='type a room name')
-                button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px;margin-top:20px') Join!
+                
+                input#roomTextBox(type='text' class='form-control' placeholder='Upiši ime sobe')
+                button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px;margin-top:20px') Uđi u sobu!
 
-        script.
+        script(src='/javascripts/websockets.js')
+        script(type='text/javascript').
+            io
             $('#joinButton').click(function(evt){
-            if($('#usernameTextBox').val()=== undefined || $('#usernameTextBox').val()=== "" || $('#usernameTextBox').val()!=='root')
-                alert("ne bu išlo bez pravog imena")
-            else
-                window.location = 'serverRoom/' + $('#roomTextBox').val() + '?username=' + 'root';
-            return;
+                if($('#roomTextBox').val()=== undefined || $('#roomTextBox').val()=== "")
+                    alert("ne bu išlo bez pravog imena");
+                else {
+                    io.emit('checkRoomName', {roomName: $('#roomTextBox').val()});
+                }          
             });

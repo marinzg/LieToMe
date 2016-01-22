@@ -29,7 +29,8 @@ block content
             //window.location will change the browser address to the right hand of the equal sign.
             //for example a room name 'coolkids' with user Steve 
             //will set the broswer to [hostname]/rooms/coolkids?username=Steve
-            if($('#usernameTextBox').val()=== undefined) alert("ne bu išlo bez imena");
+
+            if(roomName=== undefined) alert("Odaberi sobu");
             else
             window.location = 'rooms/' + roomName + '?username=' + $('#usernameTextBox').val();
             return;

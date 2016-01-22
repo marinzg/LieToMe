@@ -44,14 +44,12 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    server: "localhost\\MSSQLSERVER",    //MARIN
- //   server: "localhost\\SQLEXPRESS",    //LINA
+    //server: "localhost\\MSSQLSERVER",    //MARIN
+    server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-   // password: "n4KmgANB"        //MARIN
-   // password : "tbbt"           //LINA
-      password: "projekt"          //MARTINA
-
+    //password: "n4KmgANB"        //MARIN
+    password : "tbbt"           //LINA
 };
 
 
@@ -107,7 +105,7 @@ app.get('/rooms/:id', function (req, res) {
         indexMessage = 'Postoji već korisnik s istim korisničkim imenom.';
         res.redirect('home');
     }
-
+    
     //check if username is empty string
     if (req.query.username === "") {
         indexMessage = 'Unesite ispravno korisničko ime.';
@@ -147,11 +145,16 @@ app.get('/server', function (req, res) {
 });
 app.get('/home', function (req, res) {
     
-    if (indexMessage !== '') {
+    if (indexMessage === 'Postoji već korisnik s istim korisničkim imenom.') {
+        indexMessage = '';
+        res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'Postoji već korisnik s istim korisničkim imenom.' });
+    }
+
+    if (indexMessage === '') {
+        res.render('home', { title: 'LieToMe' , rooms: rooms, message: '' });
+    } else {
         indexMessage = '';
         res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'Unesite ispravno korisničko ime.' });
-    } else {
-        res.render('home', { title: 'LieToMe' , rooms: rooms, message: '' });
     }
 });
 
@@ -204,11 +207,10 @@ function isInRoom(atmRoom, atmUser) {
     return false;
 }
 
-function isAnswerCopy(atmRoom, atmAnswer ){
-    for (var i in answeresInRoom[atmRoom]) {
-        if (i === atmAnswer) {
-            console.log(i);
-            console.log(atmAnswer);
+function isAnswerCopy(atmRoom, atmAnswer){
+    for (var i in usersInRoom[atmRoom]) {
+        
+        if (usersInRoom[atmRoom][i].answer === atmAnswer) {
             return true;
         }
     }
@@ -218,12 +220,7 @@ function isAnswerCopy(atmRoom, atmAnswer ){
 app.io.route('sendMessage', function (req) {
     
     var doubleAnswer = isAnswerCopy(req.data.room, req.data.message);
-    
-    console.log("već je netko napisao");
-    console.log(doubleAnswer);
-
-    if (req.data.message === correctAnswerForRoom[req.data.roomName]) {
-        console.log("ovo funkcionira");
+    if (req.data.message === correctAnswerForRoom[req.data.room] || doubleAnswer) {
     }
     
     var answers = [];
@@ -293,7 +290,17 @@ app.io.route('lockRoom', function (req) {
     req.io.emit('showUsersAndPoints', { users: users });
     sendQuestion(req);
 });
+app.io.route('checkRoomName', function (req) {
+    console.log("tu sam");
+    console.log(req.data.roomName);
 
+    var doubleRoom = isInArray(rooms, req.data.roomName);
+    if (doubleRoom) {
+        req.io.emit('roomChecked', "");
+    } else {
+        req.io.emit('roomChecked', "ok");
+    }
+});
 app.io.route('getQuestion', function (req) {
     sendQuestion(req);
 });
@@ -333,6 +340,7 @@ app.io.route('answered', function (req) {
         }
 
         app.io.room(req.data.room).broadcast('allAnswered');
+        console.log('all checked their answers');
     }
     
 });
@@ -457,5 +465,3 @@ function getUsers(roomName) {
     }
     return users;
 }
-
-  
