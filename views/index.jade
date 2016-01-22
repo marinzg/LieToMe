@@ -7,10 +7,10 @@ block title
                     h1 LieToMe!
                     p Lie to your friends. 
                 td(align='right')
-                    button#serverButton(type='button' action='' class='btn btn-default' style="height: 200%; width: 70%; font-size:150%") server
+                    button#serverButton(type='button' action='' class='btn btn-default' style="width:70%; height:60%; font-size: 20px") server
                 td(align='right')
-                    button#clientButton(type='button' class='btn btn-default' style="height: 200%; width: 70%; font-size:150%") klijent
-     
+                    button#clientButton(type='button' class='btn btn-default' style="width:70%; height:60%; font-size: 20px") klijent
+    p#demo
     script.
         $('#serverButton').click(function(evt){
             window.location = 'server';
@@ -21,3 +21,7 @@ block title
             window.location = 'home';
             return;
         });
+        if(parseInt($(document).width()) < 553) {
+            document.getElementById('serverButton').style.display = 'none';
+            document.getElementById('clientButton').style.display = 'none';
+        };
