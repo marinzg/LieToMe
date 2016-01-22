@@ -33,6 +33,7 @@ table.liveLeaderBoard tbody{
 .navbar-default .navbar-brand{
     color:#ffffff
 }
+.navbar-default .navbar-collapse,.navbar-default .navbar-form{border-color:#86190c}
 
 /*navbar*/
 .navbar-default{
