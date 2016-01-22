@@ -1,12 +1,4 @@
-﻿/*var http = require('http');
-var port = process.env.port || 1337;
-http.createServer(function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Hello World\n');
-}).listen(port);*/
-
-
-/**
+﻿/**
  * Module dependencies.
  */
 
@@ -70,6 +62,7 @@ var answeresInRoom = [];
 answeresInRoom["Elfs"] = 0;
 answeresInRoom["Random"] = 0;
 
+var questionCounter = 1;
 
 
 passport.serializeUser(function (user, done) {
@@ -223,7 +216,7 @@ app.io.route('sendMessage', function (req) {
     req.io.join(req.data.room);
     
     var user = usersInRoom[req.data.room][req.data.username];
-    usersInRoom[req.data.room][req.data.username] = { answer: req.data.message, points: user.points }; //u bodovanju prebrisati odgovore
+    usersInRoom[req.data.room][req.data.username] = { answer: req.data.message.toUpperCase(), points: user.points }; //u bodovanju prebrisati odgovore
     var counterUserInRoom = -1;
     var counterAnswerInRoom = 0;
     
@@ -286,8 +279,39 @@ app.io.route('checkRoomName', function (req) {
         req.io.emit('roomChecked', "ok");
     }
 });
+
+function pronounceWinners(users, others) {
+    var winners = [];
+    var maxPoints = 0;
+    for (var i in users.sort(function (a, b) { return b.points - a.points;})) {
+        if (maxPoints <= users[i].points) {
+            maxPoints = users[i].points;
+            winners.push(users[i]);
+        } else {
+            
+            others.push(users[i]);
+        }
+    }
+    return winners;
+}
+
 app.io.route('getQuestion', function (req) {
-    sendQuestion(req);
+    console.log(questionCounter + ' < '+questionsInRoom[req.data.roomName].length);
+    if (questionCounter <= questionsInRoom[req.data.roomName].length) {
+        var users = getUsers(req.data.roomName);
+        var others = [];
+        var winners = pronounceWinners(users, others);
+        var winnerPoints = 0;
+        for (var i in winners) {
+            winnerPoints = winners[i].points;
+            break;
+        }
+        console.log('winners: ' + winners);
+        console.log('others: ' + users);
+        req.io.emit('gameOver', {winners: winners, winnerPoints: winnerPoints, others: others});
+    } else {
+        sendQuestion(req);
+    }
 });
 /*app.io.route('DMWatching', function (req) {
 	rooms.forEach(function (room) {
@@ -382,8 +406,8 @@ function sendQuestion(req) {
                         console.log(err);
                     }
                     else {
-                        var users = getUsers(req.data.roomName);
-                        correctAnswerForRoom[req.data.roomName] = recordset[0].answer;
+                        var users = getUsers(req.data.roomName).sort(function (a, b) { return b.points - a.points });
+                        correctAnswerForRoom[req.data.roomName] = recordset[0].answer.toUpperCase();
                         
 
                         req.io.emit('questionSent', { message: recordset[0].question, users: users });

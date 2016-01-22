@@ -22,9 +22,15 @@ block content
         p#answersList
     .thumbnail(id = "authorsHolder" style='display:none')
         p#authorsList
+    .thumbnail(id="finalLeaderBoard" style='display:none')
+        p#winner
+        table(class='liveLeaderBoard' style='width:100%')
+            tbody(id="finalLeaderBoardTable")
     .input-group
         button#lockButton(type='button' action='' class='btn btn-default' style='margin-left:10px') &#x1f512; Zaključaj!
         button#newQuestion(type='button' action='' class='btn btn-default' style='margin-left:10px; display: none' ) New question
+        button#newRound(type='button' action='' class='btn btn-default' style='display: none') Novi krug
+        button#quitGame(type='button' action='' class='btn btn-default' style='display: none') Kraj igre
 
 
     script(src='/javascripts/websockets.js')

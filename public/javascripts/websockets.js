@@ -72,7 +72,7 @@ io.on('answersReady', function (data) {
 io.on('allAnswered', function (data) {
     //alert('all answered');
     if (userName === 'root') {
-       // alert('its root');
+        alert('its root');
         document.getElementById('answersList').innerHTML = "";
         document.getElementById('authorsList').innerHTML = "";
         showAuthors(data);
@@ -109,6 +109,35 @@ io.on('correctInput', function () {
     $('#chatTextBox').val(''); //clears the message text box
     document.getElementById('spin').style.display = 'block';
     spinner.spin(target);
+});
+
+io.on('gameOver', function (data) {
+    alert('gameOver');
+    document.getElementById('questionHolder').style.display = 'none';
+    document.getElementById('answersHolder').style.display = 'none';
+    document.getElementById('consoleHolder').style.display = 'none';
+
+    document.getElementById('newRound').style.display = 'block';
+    document.getElementById('quitGame').style.display = 'block';
+    document.getElementById('finalLeaderBoard').style.display = 'block';
+    
+    var winners = "";
+    var noOfWinners = 0;
+    for (var i in data.winners) {
+        winners += data.winners[i].username + ', ';
+        noOfWinners++;
+    }
+    alert(noOfWinners);
+    winners = winners.substring(0, winners.length - 2);
+    if (noOfWinners <= 1) {
+        $('#winner').append('<h2>Pobjednik je ' + winners + '    (broj bodova: ' + data.winnerPoints + ')' + '</h2>');
+    } else {
+        $('#winner').append('<h2>Pobjednici su ' + winners + '    (broj bodova: ' + data.winnerPoints + ')' + '</h2>');
+    }
+    
+    for (var i in data.others) {
+        $('#finalLeaderBoardTable').append('<tr><td>' + data.others[i].username + '</td>  <td >' + data.others[i].points + '</td></tr>');
+    }
 });
 
 $('#sendButton').click(function () {
