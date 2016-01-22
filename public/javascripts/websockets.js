@@ -69,12 +69,26 @@ io.on('answersReady', function (data) {
     spinner.stop(target);
 });
 
-io.on('allAnswered', function () {
+io.on('allAnswered', function (data) {
     //alert('all answered');
     if (userName === 'root') {
-        //alert('its root');
+       // alert('its root');
         document.getElementById('answersList').innerHTML = "";
+        document.getElementById('authorsList').innerHTML = "";
+        showAuthors(data);
+        document.getElementById('authorsHolder').style.display = 'none';
         io.emit('getQuestion', { roomName : roomName });
+
+        //prikaz autora i odgovora
+    }
+});
+
+io.on('roomChecked', function (message) {
+    if (message === 'ok') {
+        window.location = 'serverRoom/' + $('#roomTextBox').val() + '?username=' + 'root';
+    } else {
+        alert("Soba već postoji");
+        $('#roomTextBox').val("");
     }
 });
 
@@ -129,4 +143,18 @@ function gotAnswer(ans) {
     spinner.spin(target);
     //document.getElementById('spin').style.display = 'block';
     io.emit('answered', { username: userName, answer: ans, room: roomName });
+}
+
+function showAuthors(author) {
+   // alert("prije");
+    document.getElementById('authorsHolder').style.display = 'block';
+    
+    for (var i in author.users) {
+        $('#authorsList').append('<p>'+ author.users[i].username + ' : ' + author.users[i].answer + '</p>');
+    };
+
+    //alert("poslije");
+
+ 
+
 }

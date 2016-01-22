@@ -147,11 +147,16 @@ app.get('/server', function (req, res) {
 });
 app.get('/home', function (req, res) {
     
-    if (indexMessage !== '') {
+    if (indexMessage === 'Postoji već korisnik s istim korisničkim imenom.') {
+        indexMessage = '';
+        res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'Postoji već korisnik s istim korisničkim imenom.' });
+    }
+
+    if (indexMessage === '') {
+        res.render('home', { title: 'LieToMe' , rooms: rooms, message: '' });
+    } else {
         indexMessage = '';
         res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'Unesite ispravno korisničko ime.' });
-    } else {
-        res.render('home', { title: 'LieToMe' , rooms: rooms, message: '' });
     }
 });
 
@@ -206,7 +211,7 @@ function isInRoom(atmRoom, atmUser) {
 
 
 app.io.route('sendMessage', function (req) {
-
+    
     if (req.data.message.toUpperCase() === correctAnswerForRoom[req.data.room].toUpperCase()) {
         req.io.emit('wrongInput');
         return;
@@ -236,7 +241,7 @@ app.io.route('sendMessage', function (req) {
     
     if (counterUserInRoom === counterAnswerInRoom) {
         console.log("svi su odgovorili");
-
+        
 
         var randomizedUsersInRoom = randomizeUsersInRoom(req.data.room);
         
@@ -269,7 +274,17 @@ app.io.route('lockRoom', function (req) {
     req.io.emit('showUsersAndPoints', { users: users });
     sendQuestion(req);
 });
+app.io.route('checkRoomName', function (req) {
+    console.log("tu sam");
+    console.log(req.data.roomName);
 
+    var doubleRoom = isInArray(rooms, req.data.roomName);
+    if (doubleRoom) {
+        req.io.emit('roomChecked', "");
+    } else {
+        req.io.emit('roomChecked', "ok");
+    }
+});
 app.io.route('getQuestion', function (req) {
     sendQuestion(req);
 });
@@ -302,12 +317,11 @@ app.io.route('answered', function (req) {
    
     console.log(answeresInRoom[req.data.room] + '===' + objectsInArray(usersInRoom[req.data.room]));
     if (answeresInRoom[req.data.room] === objectsInArray(usersInRoom[req.data.room])) {
+        app.io.room(req.data.room).broadcast('allAnswered', { users: getUsers(req.data.room) });
         for (var i in usersInRoom[req.data.room]) {
             user = usersInRoom[req.data.room][i];
             usersInRoom[req.data.room][i] = { answer: "", points: user.points }
         }
-
-        app.io.room(req.data.room).broadcast('allAnswered');
     }
     
 });
