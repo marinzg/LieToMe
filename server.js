@@ -48,9 +48,9 @@ var config = {
  //   server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    password: "n4KmgANB"        //MARIN
+   // password: "n4KmgANB"        //MARIN
    // password : "tbbt"           //LINA
-   //   password: "projekt"          //MARTINA
+      password: "projekt"          //MARTINA
 
 };
 
