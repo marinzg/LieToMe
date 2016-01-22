@@ -44,12 +44,12 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    //server: "localhost\\MSSQLSERVER",    //MARIN
-    server: "localhost\\SQLEXPRESS",    //LINA
+    server: "localhost\\MSSQLSERVER",    //MARIN
+    //server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    //password: "n4KmgANB"        //MARIN
-    password : "tbbt"           //LINA
+    password: "n4KmgANB"        //MARIN
+    //password : "tbbt"           //LINA
 };
 
 

@@ -21,3 +21,7 @@ block title
             window.location = 'home';
             return;
         });
+        if(parseInt($(document).width()) < 553) {
+            document.getElementById('serverButton').style.display = 'none';
+            document.getElementById('clientButton').style.display = 'none';
+        };
