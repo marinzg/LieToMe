@@ -327,12 +327,11 @@ app.io.route('answered', function (req) {
    
     console.log(answeresInRoom[req.data.room] + '===' + objectsInArray(usersInRoom[req.data.room]));
     if (answeresInRoom[req.data.room] === objectsInArray(usersInRoom[req.data.room])) {
+        app.io.room(req.data.room).broadcast('allAnswered', { users: getUsers(req.data.room) });
         for (var i in usersInRoom[req.data.room]) {
             user = usersInRoom[req.data.room][i];
             usersInRoom[req.data.room][i] = { answer: "", points: user.points }
         }
-
-        app.io.room(req.data.room).broadcast('allAnswered');
     }
     
 });
