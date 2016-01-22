@@ -78,12 +78,7 @@ passport.deserializeUser(function (id, done) {
         done(err, user);
     });
 });
-/*passport.use(new LocalStrategy(function (username, password, done) {
-	if (username === "dana")
-		return done(null, { id: 1, username: "dana", password: "no" });
-}));*/
 
-// development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
@@ -92,28 +87,28 @@ app.get('/', function (req, res) {
     res.render('index');
 
 });
-
 app.get('/create', function (req, res) {
     
     res.render('createroom', { title: 'LieToMe Room Create' });
 
 });
-/*app.get('/login', function (req, res) {
-	
-	res.render('login', { title: 'DMITAR Chat Room Super Secret DM login' });
-
-});*/
 app.get('/about', function (req, res) {
     
     res.render('about', { title: '' });
 
 });
 app.get('/rooms/:id', function (req, res) {
-    var doubleUser = isInRoom(req.params.id, req.query.username);
-
     
+    //check if there is another user with same username
+    var doubleUser = isInRoom(req.params.id, req.query.username);
     if (doubleUser) {
-        indexMessage = 'ne bu išlo';
+        indexMessage = 'Postoji već korisnik s istim korisničkim imenom.';
+        res.redirect('home');
+    }
+    
+    //check if username is empty string
+    if (req.query.username === "") {
+        indexMessage = 'Unesite ispravno korisničko ime.';
         res.redirect('home');
     }
     
@@ -122,11 +117,13 @@ app.get('/rooms/:id', function (req, res) {
         rooms.push(req.params.id);
         console.log(rooms);
     }
+    
+    //check if room is locked
     if (!isInArray(lockedRooms, req.params.id)) {
         //render the room template with the name of the room for the underlying data model
         res.render('room', { title : req.params.id, username : req.query.username });
     } else {
-        indexMessage = 'ne bu išlo';
+        indexMessage = 'Soba je zaključana.';
         res.redirect('home');
     }
         
@@ -141,18 +138,16 @@ app.get('/server', function (req, res) {
     
     if (indexMessage !== '') {
         indexMessage = '';
-        res.render('server', { rooms: rooms, message: 'ne bu išlo' });
+        res.render('server', { rooms: rooms, message: 'Već postoji server za odabranu sobu.' });
     } else {
         res.render('server', { rooms: rooms, message: '' });
     }
-    
-    res.render('server', { rooms: rooms });
 });
 app.get('/home', function (req, res) {
     
     if (indexMessage !== '') {
         indexMessage = '';
-        res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'ne bu išlo' });
+        res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'Unesite ispravno korisničko ime.' });
     } else {
         res.render('home', { title: 'LieToMe' , rooms: rooms, message: '' });
     }
@@ -161,7 +156,7 @@ app.get('/home', function (req, res) {
 app.get('/serverRoom/:id', function (req, res) {
     
     if (isInArray(lockedRooms, req.params.id)) {
-        indexMessage = 'ne bu išlo';
+        indexMessage = 'Već postoji server za odabranu sobu.';
         res.redirect('server');
     }
 
@@ -185,20 +180,15 @@ app.get('/serverRoom/:id', function (req, res) {
 
 // Setup the ready route, join room and broadcast to room.
 app.io.route('userConnected', function (req) {
-    var doubleUser = isInRoom(req.data.room, req.data.username);
-    console.log(doubleUser);
-    
-    console.log('Recieved real-time ready message from user: ' + req.data.username + ' for room: ' + req.data.room);
     req.io.join(req.data.room);
     req.io.room(req.data.room).broadcast('userConnected', {
-            message: req.data.username + ' just joined the room. ',
+            message: req.data.username + ' je u sobi. ',
             username: req.data.username
         });
         
     
 
     usersInRoom[req.data.room][req.data.username] = {answer: "", points: 0};
-    //console.log(usersInRoom[req.data.room].length);
     
 });
 
@@ -229,7 +219,7 @@ app.io.route('sendMessage', function (req) {
     }
     
     var answers = [];
-    console.log('recieved message : ' + req.data.message + ' for room ' + req.data.room + ' from user ' + req.data.username);
+    
     req.io.join(req.data.room);
     
     //display correct answer
@@ -241,7 +231,6 @@ app.io.route('sendMessage', function (req) {
         //console.log('right answer sent: ' + correctAnswer);
     };
     randomCounterForRoom[req.data.room]--;
-    console.log('rdc je smanjen na: ' + randomCounterForRoom[req.data.room]);
     req.io.room(req.data.room).broadcast('announce', {
         answer: req.data.message,
         i: req.data.username,
@@ -255,7 +244,7 @@ app.io.route('sendMessage', function (req) {
     for (var i in usersInRoom[req.data.room]) {
         counterUserInRoom++;
        
-        console.log(i + " : " + usersInRoom[req.data.room][i].answer + ', points: ' + usersInRoom[req.data.room][i].points);
+       
 
         if (usersInRoom[req.data.room][i].answer !== "") {
             counterAnswerInRoom++;
@@ -264,8 +253,7 @@ app.io.route('sendMessage', function (req) {
         //console.log(i);
     };
     
-    console.log(counterUserInRoom);
-    console.log(counterAnswerInRoom);
+    
     if (counterUserInRoom === counterAnswerInRoom) {
         console.log("svi su odgovorili");
         

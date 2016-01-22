@@ -5,7 +5,7 @@ block content
             div(style='margin-bottom: 30px;margin-left:auto; margin-right:auto;').well
                 .dropdown
                     button#dropdownMenu1.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
-                        | Choose an existing room 
+                        | Odaberi postojeću sobu
                         span.caret
                         |   
                     ul.dropdown-menu(role='menu', aria-labelledby='dropdownMenu1') 
@@ -13,9 +13,9 @@ block content
                             li
                                 a()=room
                             
-                    button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Join!
+                    button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Uđi u sobu
             .col-lg-6
-                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Create a new room!
+                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Stvori novu sobu
 
     script(type='text/javascript').
         var roomName;
