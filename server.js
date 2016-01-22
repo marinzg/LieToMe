@@ -44,12 +44,13 @@ app.use(app.router);
 var DMSocket;
 var indexMessage = '';
 var config = {
-    //server: "localhost\\MSSQLSERVER",    //MARIN
-    server: "localhost\\SQLEXPRESS",    //LINA
+    server: "localhost\\MSSQLSERVER",    //MARIN
+ //   server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    //password: "n4KmgANB"        //MARIN
-    password : "tbbt"           //LINA
+   // password: "n4KmgANB"        //MARIN
+   // password : "tbbt"           //LINA
+      password: "projekt"          //MARTINA
 };
 
 
@@ -139,13 +140,6 @@ app.get('/rooms/:id', function (req, res) {
 
 app.get('/server', function (req, res) {
     
-    if (indexMessage !== '') {
-        indexMessage = '';
-        res.render('server', { rooms: rooms, message: 'ne bu išlo' });
-    } else {
-        res.render('server', { rooms: rooms, message: '' });
-    }
-    
     res.render('server', { rooms: rooms });
 });
 app.get('/home', function (req, res) {
@@ -159,12 +153,6 @@ app.get('/home', function (req, res) {
 });
 
 app.get('/serverRoom/:id', function (req, res) {
-    
-    if (isInArray(lockedRooms, req.params.id)) {
-        indexMessage = 'ne bu išlo';
-        res.redirect('server');
-    }
-
     if (rooms.indexOf(req.params.id) === -1) {
         rooms.push(req.params.id);
         console.log(rooms);
@@ -212,10 +200,11 @@ function isInRoom(atmRoom, atmUser) {
     return false;
 }
 
-function isAnswerCopy(atmRoom, atmAnswer){
-    for (var i in usersInRoom[atmRoom]) {
-        
-        if (usersInRoom[atmRoom][i].answer === atmAnswer) {
+function isAnswerCopy(atmRoom, atmAnswer ){
+    for (var i in answeresInRoom[atmRoom]) {
+        if (i === atmAnswer) {
+            console.log(i);
+            console.log(atmAnswer);
             return true;
         }
     }
@@ -225,7 +214,12 @@ function isAnswerCopy(atmRoom, atmAnswer){
 app.io.route('sendMessage', function (req) {
     
     var doubleAnswer = isAnswerCopy(req.data.room, req.data.message);
-    if (req.data.message === correctAnswerForRoom[req.data.room] || doubleAnswer) {
+    
+    console.log("već je netko napisao");
+    console.log(doubleAnswer);
+
+    if (req.data.message === correctAnswerForRoom[req.data.roomName]) {
+        console.log("ovo funkcionira");
     }
     
     var answers = [];
@@ -337,7 +331,6 @@ app.io.route('answered', function (req) {
         }
 
         app.io.room(req.data.room).broadcast('allAnswered');
-        console.log('all checked their answers');
     }
     
 });
