@@ -125,6 +125,7 @@ app.get('/rooms/:id', function (req, res) {
         //render the room template with the name of the room for the underlying data model
         res.render('room', { title : req.params.id, username : req.query.username });
     } else {
+
         indexMessage = 'Soba je zaključana.';
         res.redirect('home');
     }
@@ -146,12 +147,17 @@ app.get('/server', function (req, res) {
     }
 });
 app.get('/home', function (req, res) {
-    
+    var x = [];
+    for (var i in rooms) {
+        if ( !isInArray(lockedRooms, rooms[i]) ){ 
+            x.push(rooms[i]);
+        }
+    }
     if (indexMessage !== '') {
         indexMessage = '';
-        res.render('home', { title: 'LieToMe' , rooms: rooms, message: 'Unesite ispravno korisničko ime.' });
+        res.render('home', { title: 'LieToMe' , rooms: x, message: 'Unesite ispravno korisničko ime.' });
     } else {
-        res.render('home', { title: 'LieToMe' , rooms: rooms, message: '' });
+        res.render('home', { title: 'LieToMe' , rooms: x, message: '' });
     }
 });
 
@@ -327,7 +333,7 @@ app.io.route('answered', function (req) {
    
     console.log(answeresInRoom[req.data.room] + '===' + objectsInArray(usersInRoom[req.data.room]));
     if (answeresInRoom[req.data.room] === objectsInArray(usersInRoom[req.data.room])) {
-        app.io.room(req.data.room).broadcast('allAnswered', { users: getUsers(req.data.room) });
+        app.io.room(req.data.room).broadcast('allAnswered', { users: getUsers(req.data.room) , corrans: correctAnswerForRoom[req.data.room] });
         for (var i in usersInRoom[req.data.room]) {
             user = usersInRoom[req.data.room][i];
             usersInRoom[req.data.room][i] = { answer: "", points: user.points }

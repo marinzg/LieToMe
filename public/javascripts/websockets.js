@@ -123,14 +123,14 @@ function gotAnswer(ans) {
 }
 
 function showAuthors(author) {
-   // alert("prije");
+    alert("prije");
     document.getElementById('authorsHolder').style.display = 'block';
-    
+    $('#authorsList').append('<p style=\"color:green\">' + 'Točan odgovor je bio: '+ author.corrans + '</p>');
     for (var i in author.users) {
-        $('#authorsList').append('<p>'+ author.users[i].username + ' : ' + author.users[i].answer + '</p>');
+        $('#authorsList').append('<p>'+ author.users[i].username + ': ' + author.users[i].answer + '</p>');
     };
 
-    //alert("poslije");
+    alert("poslije");
 
  
 
