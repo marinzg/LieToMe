@@ -1,12 +1,11 @@
 ﻿extends layout
 block title
-        .well.row
-            h1 Napravi novu sobu
+        h1.well Napravi novu sobu
 block content
         .well
                 
                 input#roomTextBox(type='text' class='form-control' placeholder='Upiši ime sobe')
-                button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px;margin-top:20px') Uđi u sobu!
+                button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px;margin-top:20px') Stvori sobu!
 
         script(src='/javascripts/websockets.js')
         script(type='text/javascript').

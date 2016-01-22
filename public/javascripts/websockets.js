@@ -76,9 +76,12 @@ io.on('allAnswered', function (data) {
         document.getElementById('answersList').innerHTML = "";
         document.getElementById('authorsList').innerHTML = "";
         showAuthors(data);
-        document.getElementById('authorsHolder').style.display = 'none';
-        io.emit('getQuestion', { roomName : roomName });
-
+       // alert("poslije");
+        setTimeout(function () {
+            document.getElementById('authorsHolder').style.display = 'none';
+            io.emit('getQuestion', { roomName : roomName });
+        }, 6000);
+        
         //prikaz autora i odgovora
     }
 });
@@ -152,9 +155,9 @@ $('#sendButton').click(function () {
 
 $('#lockButton').click(function (evt) {
     io.emit('lockRoom', { roomName: roomName });
-    alert('soba zakljucana');
+    //alert('soba zakljucana');
     document.getElementById('lockButton').style.display = 'none';
-    document.getElementById('newQuestion').style.display = 'block';
+    //document.getElementById('newQuestion').style.display = 'block';
 });
 
 $('#newQuestion').click(function (evt) {
@@ -175,14 +178,17 @@ function gotAnswer(ans) {
 }
 
 function showAuthors(author) {
-    alert("prije");
+    //alert("prije");
     document.getElementById('authorsHolder').style.display = 'block';
-    $('#authorsList').append('<p style=\"color:green\">' + 'Točan odgovor je bio: '+ author.corrans + '</p>');
-    for (var i in author.users) {
-        $('#authorsList').append('<p>'+ author.users[i].username + ': ' + author.users[i].answer + '</p>');
-    };
 
-    alert("poslije");
+    $('#authorsList').append('<p>' + 'Točan odgovor je bio: ' + '<font color=\"green\"> ' + author.corrans + '</font>' +'</p>'); //<font color="red">This is some text!</font>
+    setTimeout(function () {
+        for (var i in author.users) {
+            $('#authorsList').append('<p>' + author.users[i].username + ': ' + author.users[i].answer + '</p>');
+        };
+    }, 1000);
+   
+  //  alert("poslije");
 
  
 
