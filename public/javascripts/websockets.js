@@ -139,6 +139,7 @@ function showAuthors(author) {
         $('#authorsList').append('<p>'+ author.users[i].username + ' : ' + author.users[i].answer + '</p>');
     };
 
+    $('#authorsList').append('<p style=\"color:green\">' + 'Točan odgovor je bio: ' + author.corrans + '</p>');
     //alert("poslije");
 
  
