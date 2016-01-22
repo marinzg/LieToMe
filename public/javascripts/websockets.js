@@ -76,7 +76,7 @@ io.on('allAnswered', function (data) {
         document.getElementById('answersList').innerHTML = "";
         document.getElementById('authorsList').innerHTML = "";
         showAuthors(data);
-        alert("poslije");
+       // alert("poslije");
         setTimeout(function () {
             document.getElementById('authorsHolder').style.display = 'none';
             io.emit('getQuestion', { roomName : roomName });
@@ -126,9 +126,9 @@ $('#sendButton').click(function () {
 
 $('#lockButton').click(function (evt) {
     io.emit('lockRoom', { roomName: roomName });
-    alert('soba zakljucana');
+    //alert('soba zakljucana');
     document.getElementById('lockButton').style.display = 'none';
-    document.getElementById('newQuestion').style.display = 'block';
+    //document.getElementById('newQuestion').style.display = 'block';
 });
 
 $('#newQuestion').click(function (evt) {
@@ -149,7 +149,7 @@ function gotAnswer(ans) {
 }
 
 function showAuthors(author) {
-    alert("prije");
+    //alert("prije");
     document.getElementById('authorsHolder').style.display = 'block';
 
     $('#authorsList').append('<p>' + 'Točan odgovor je bio: ' + '<font color=\"green\"> ' + author.corrans + '</font>' +'</p>'); //<font color="red">This is some text!</font>
