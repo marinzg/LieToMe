@@ -23,18 +23,19 @@ io.on('questionSent', function (data) {
     document.getElementById('question').innerHTML = "";
     $('#question').append('<p class="question">' + data.message + '</p>');
     
-    document.getElementById('leaderBoard').innerHTML = '';
-    if (document.getElementById('consoleHolder').style.display === 'none')
-        document.getElementById('consoleHolder').style.display = 'block';
-    $('#leaderBoard').append('<tr><th>korisnici</th><th>bodovi</th></tr>');
-    for (var i in data.users) {
-        $('#leaderBoard').append('<tr><td>' + data.users[i].username + '</td>  <td >' + data.users[i].points + '</td></tr>');
-    };
+    
     
     document.getElementById('answersHolder').style.display = 'none';
 });
 
+io.on('nonExistingRoom', function () {
+    alert('Tražena soba ne postoji!');
+    window.location = '/';
+
+});
+
 io.on('showUsersAndPoints', function (data) {
+    document.getElementById('lockButton').style.display = 'none';
     document.getElementById('console').innerHTML = "";
     document.getElementById('console').style.display = 'none';
     document.getElementById('leaderBoard').style.display = 'block';
@@ -55,6 +56,10 @@ io.on('clientAddAnswer', function () {
     document.getElementById('answersList').innerHTML = "";
 });
 
+io.on('notEnoughUsers', function () { 
+    alert('Nije moguće zaključati sobu. Nije dovoljan broj igrača!');
+});
+
 io.on('answersReady', function (data) {
     for (var i in data.users) {
         var user = data.users[i];
@@ -72,14 +77,26 @@ io.on('answersReady', function (data) {
 io.on('allAnswered', function (data) {
     //alert('all answered');
     if (userName === 'root') {
-        alert('its root');
+        //alert('its root');
         document.getElementById('answersList').innerHTML = "";
+        document.getElementById('answersHolder').style.display = 'none';
         document.getElementById('authorsList').innerHTML = "";
+        
+        //updateLeaderBoard
+        document.getElementById('leaderBoard').innerHTML = '';
+        if (document.getElementById('consoleHolder').style.display === 'none')
+            document.getElementById('consoleHolder').style.display = 'block';
+        $('#leaderBoard').append('<tr><th>korisnici</th><th>bodovi</th></tr>');
+        for (var i in data.users) {
+            $('#leaderBoard').append('<tr><td>' + data.users[i].username + '</td>  <td >' + data.users[i].points + '</td></tr>');
+        };
+        
+
         showAuthors(data);
        // alert("poslije");
         setTimeout(function () {
             document.getElementById('authorsHolder').style.display = 'none';
-            io.emit('getQuestion', { roomName : roomName });
+            io.emit('getQuestion', { roomName : roomName, newRound: 0 });
         }, 6000);
         
         //prikaz autora i odgovora
@@ -114,14 +131,17 @@ io.on('correctInput', function () {
     spinner.spin(target);
 });
 
-io.on('gameOver', function (data) {
-    alert('gameOver');
+io.on('roundOver', function (data) {
+    //alert('gameOver');
     document.getElementById('questionHolder').style.display = 'none';
     document.getElementById('answersHolder').style.display = 'none';
     document.getElementById('consoleHolder').style.display = 'none';
 
     document.getElementById('newRound').style.display = 'block';
     document.getElementById('quitGame').style.display = 'block';
+    //document.getElementById('finalLeaderBoard').style.display = 'block';
+    document.getElementById('winner').innerHTML = '';
+    document.getElementById('finalLeaderBoardTable').innerHTML = '';
     document.getElementById('finalLeaderBoard').style.display = 'block';
     
     var winners = "";
@@ -130,16 +150,16 @@ io.on('gameOver', function (data) {
         winners += data.winners[i].username + ', ';
         noOfWinners++;
     }
-    alert(noOfWinners);
+    //alert(noOfWinners);
     winners = winners.substring(0, winners.length - 2);
     if (noOfWinners <= 1) {
         $('#winner').append('<h2>Pobjednik je ' + winners + '    (broj bodova: ' + data.winnerPoints + ')' + '</h2>');
     } else {
         $('#winner').append('<h2>Pobjednici su ' + winners + '    (broj bodova: ' + data.winnerPoints + ')' + '</h2>');
     }
-    
+    $('#winner').append('<p></p>')
     for (var i in data.others) {
-        $('#finalLeaderBoardTable').append('<tr><td>' + data.others[i].username + '</td>  <td >' + data.others[i].points + '</td></tr>');
+        $('#finalLeaderBoardTable').append('<tr><td style="text-align: end">' + data.others[i].username + '</td>  <td >' + data.others[i].points + '</td></tr>');
     }
 });
 
@@ -156,16 +176,41 @@ $('#sendButton').click(function () {
 $('#lockButton').click(function (evt) {
     io.emit('lockRoom', { roomName: roomName });
     //alert('soba zakljucana');
-    document.getElementById('lockButton').style.display = 'none';
+    
     //document.getElementById('newQuestion').style.display = 'block';
 });
 
-$('#newQuestion').click(function (evt) {
-    io.emit('getQuestion', { roomName : roomName });
+$('#newRound').click(function (evt) {
+    //document.getElementById('questionHolder').style.display = 'block';
+    //document.getElementById('answersHolder').style.display = 'block';
+    alert('newRound');
+    
+    document.getElementById('consoleHolder').style.display = 'block';
+    alert('consoleHolder');
+
+    document.getElementById('newRound').style.display = 'none';
+    alert('newRound');
+    
+    document.getElementById('quitGame').style.display = 'none';
+    alert('quitGame');
+    
+    document.getElementById('finalLeaderBoard').style.display = 'none';
+    alert('finalLeaderBoard');
+    
+    document.getElementById('authorsHolder').style.display = 'none';
+    alert('sve bi trebalo biti sakriveno');
+    
+    io.emit('getQuestion', { roomName : roomName, newRound: 1 });
+    alert('gotov emit');
 });
 
+$('#quitGame').click(function (evt) {
+    io.emit('gameOver', { room : roomName });
+});
 
-
+io.on('endGame', function () { 
+    window.location = '/';
+});
 io.on('userDisconected', function (data) {
     $('#conversation').append('<p>' + data.username + 'has disconnected. </p>');
         
@@ -181,7 +226,7 @@ function showAuthors(author) {
     //alert("prije");
     document.getElementById('authorsHolder').style.display = 'block';
 
-    $('#authorsList').append('<p>' + 'Točan odgovor je bio: ' + '<font color=\"green\"> ' + author.corrans + '</font>' +'</p>'); //<font color="red">This is some text!</font>
+    $('#authorsList').append('<h3>' + 'Točan odgovor je : ' + '<font color=\"green\"> ' + author.corrans + '</font>' +'</h3>'); //<font color="red">This is some text!</font>
     setTimeout(function () {
         for (var i in author.users) {
             $('#authorsList').append('<p>' + author.users[i].username + ': ' + author.users[i].answer + '</p>');
