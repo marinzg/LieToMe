@@ -26,8 +26,8 @@ app.use(app.router);
 
 //db connection string
 var config = {
-    server: "localhost\\MSSQLSERVER",    //MARIN
- //   server: "localhost\\SQLEXPRESS",    //LINA
+   // server: "localhost\\MSSQLSERVER",    //MARIN
+   server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
     password: "n4KmgANB"        //MARIN
@@ -61,16 +61,16 @@ answeresInRoom["Random"] = 0;
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
-
+    
 /* Controlers */ 
 app.get('/', function (req, res) {
     res.render('index', { title: 'LieToMe' });
 });
-
+    
 app.get('/create', function (req, res) {
     res.render('createroom', { title: 'LieToMe Room Create' });
 });
-
+    
 app.get('/rooms/:id', function (req, res) {
     /** room doesn't exist
      * trigered when user presses back button
@@ -84,7 +84,7 @@ app.get('/rooms/:id', function (req, res) {
         req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
         return;
     }
-    res.render('room', { title : req.params.id, username : req.query.username });
+        res.render('room', { title : req.params.id, username : req.query.username });
 });
 
 app.get('/server', function (req, res) {
@@ -111,7 +111,7 @@ app.get('/serverRoom/:id', function (req, res) {
     }
     res.render('serverRoom', { title : req.params.id, username: 'root' });
 });
-
+    
 
 /* Routes */
 // Setup the ready route, handle wrong username or roomName
@@ -161,8 +161,8 @@ app.io.route('userConnected', function (req) {
     req.io.room(req.data.roomName).broadcast('userConnected', {
             message: req.data.username + ' je u sobi. ',
             username: req.data.username
-    });
-
+        });
+        
     //room doesn't exist
     if (rooms.indexOf(req.data.roomName) === -1) {
         var argMessage = 'Soba ne postoji';
@@ -173,24 +173,24 @@ app.io.route('userConnected', function (req) {
     } 
     usersInRoom[req.data.roomName][req.data.username] = {answer: "", points: 0};
 });
-
+    
 app.io.route('gameOver', function (req) {
     var room = req.data.roomName;
-    
+
     var roomIndex = rooms.indexOf(room);
     var deletedRooms = rooms.splice(roomIndex, 1);
     
     var lockedRoomIndex = lockedRooms.indexOf(room);
     var unlockedRoom = lockedRooms.splice(lockedRoomIndex, 1);
-    
+
     var removedQuestionInRoom = delete questionsInRoom[room];
     
     var removedUsersInRoom = delete usersInRoom[room];
-    
-    var deletedCorrectAnswersForRoom = delete correctAnswerForRoom[room];
-    
-    var deletedAnswersInRoom = delete answeresInRoom[room];
 
+    var deletedCorrectAnswersForRoom = delete correctAnswerForRoom[room];
+
+    var deletedAnswersInRoom = delete answeresInRoom[room];
+    
     app.io.room(room).broadcast('endGame');
     console.log('Game in room ' + room + 'has ended.');
 });
@@ -238,7 +238,7 @@ app.io.route('lockRoom', function (req) {
         req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
         return;
     }
-        
+   
     lockedRooms.push(req.data.roomName);
     var users = getUsers(req.data.roomName);
     req.io.emit('showUsersAndPoints', { users: users });
@@ -262,7 +262,7 @@ app.io.route('getQuestion', function (req) {
     if (req.data.newRound) {
         for (var i = 0; i < length; i++) {
             questionsInRoom[req.data.roomName].pop();
-        }
+}
     }; 
 
     if (numberOfQuestions <= questionsInRoom[req.data.roomName].length) {
@@ -356,8 +356,8 @@ function sendQuestion(req) {
                 });
             } conn.close();
         });
-        
-    });  
+                
+    });
 }
 
 function getUsers(roomName) {
@@ -431,7 +431,7 @@ function randomizeUsersInRoom(roomName) {
     }
     return usersInRoomRandomized;
 }
-
+        
 function isInRoom(atmRoom, atmUser) {
     for (var i in usersInRoom[atmRoom]) {
         if (i === atmUser) {
@@ -439,8 +439,8 @@ function isInRoom(atmRoom, atmUser) {
         }
     }
     return false;
-}
-
+    }
+  
 function pronounceWinners(users, others) {
     var winners = [];
     var maxPoints = 0;
