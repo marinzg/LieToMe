@@ -56,13 +56,10 @@
     <Content Include="public\stylesheets\custom.css" />
     <Content Include="public\stylesheets\LieToMeCustom.css" />
     <Content Include="public\stylesheets\style.styl" />
-    <Content Include="views\about.jade" />
     <Content Include="views\createroom.jade" />
-    <Content Include="views\dmview.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\home.jade" />
     <Content Include="views\layout.jade" />
-    <Content Include="views\login.jade" />
     <Content Include="views\room.jade" />
     <Content Include="views\server.jade" />
     <Content Include="views\serverRoom.jade" />

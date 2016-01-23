@@ -1,19 +1,19 @@
 ﻿extends layout
+
 block title
         h1.well Napravi novu sobu
 block content
-        .well
-                
-                input#roomTextBox(type='text' class='form-control' placeholder='Upiši ime sobe')
-                button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px;margin-top:20px') Stvori sobu!
+    .well
+        input#roomTextBox(type='text' class='form-control' placeholder='Upiši ime sobe')
+        button#createRoomButton(type='button' class='btn btn-default' style='margin-left:10px;margin-top:20px') Stvori sobu!
 
-        script(src='/javascripts/websockets.js')
-        script(type='text/javascript').
-            io
-            $('#joinButton').click(function(evt){
-                if($('#roomTextBox').val()=== undefined || $('#roomTextBox').val()=== "")
-                    alert("ne bu išlo bez pravog imena");
-                else {
-                    io.emit('checkRoomName', {roomName: $('#roomTextBox').val()});
-                }          
-            });
+    script(src='/javascripts/websockets.js')
+    script(type='text/javascript').
+        io
+        $('#createRoomButton').click(function(evt){
+            if($('#roomTextBox').val()=== undefined || $('#roomTextBox').val()=== "") 
+                alert("ne bu išlo bez pravog imena");
+            else {
+                io.emit('checkRoomName', {roomName: $('#roomTextBox').val()});
+            }
+        });

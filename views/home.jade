@@ -22,19 +22,18 @@ block content
                             
                     button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Uđi u sobu!
             
-
+    script(src='/javascripts/websockets.js')
     script(type='text/javascript').
         var roomName;
-        $('#joinButton').click(function(evt){
-            //window.location will change the browser address to the right hand of the equal sign.
-            //for example a room name 'coolkids' with user Steve 
-            //will set the broswer to [hostname]/rooms/coolkids?username=Steve
-
-            if(roomName=== undefined) alert("Odaberi sobu");
-            else
-            window.location = 'rooms/' + roomName + '?username=' + $('#usernameTextBox').val();
-            return;
-        });
+        //$('#joinButton').click(function(evt){
+        //    //window.location will change the browser address to the right hand of the equal sign.
+        //    //for example a room name 'coolkids' with user Steve 
+        //    //will set the broswer to [hostname]/rooms/coolkids?username=Steve
+        //    if(roomName=== undefined) alert("Odaberi sobu");
+        //    else
+        //    window.location = 'rooms/' + roomName + '?username=' + $('#usernameTextBox').val();
+        //    return;
+        //});
         $('#createButton').click(function(evt){
             //window.location will change the browser address to the right hand of the equal sign.
             //for example a room name 'coolkids' with user Steve 
@@ -49,9 +48,9 @@ block content
           $("#dropdownMenu1").addClass("btn-primary");
 
         });
-        $(function () {
-        var message = '#{message}';
-        if(message!==''){
-            alert(message);
-        }
-        });
+        //$(function () {
+        //var message = '#{message}';
+        //if(message!==''){
+        //    alert(message);
+        //}
+        //});

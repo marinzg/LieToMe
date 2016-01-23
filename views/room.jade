@@ -5,7 +5,7 @@ block title
     h1.well #{title}
 block content
 
-    //this well will hold our conversation of the room
+    //this well will hold answers of the room
     .thumbnail(id = "answersHolder" style='display: none')
         p#answers 
 
@@ -44,12 +44,11 @@ block content
             , hwaccel: false // Whether to use hardware acceleration
             , position: 'relative' // Element positioning
         }
-        //document.getElementById('spin').style.display = 'block';
         var target = document.getElementById('spin');
         var spinner = new Spinner(opts);
         //connect to the server using the socket.io front-end js library
         io
         //send the a message to the 'ready' route with the room and the username
-        io.emit('userConnected', { room : roomName, username: userName });
+        io.emit('userConnected', { roomName : roomName, username: userName });
 
         
