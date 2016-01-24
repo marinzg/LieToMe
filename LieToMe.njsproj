@@ -34,6 +34,7 @@
     <Compile Include="public\javascripts\websockets.js" />
     <Compile Include="server.js" />
     <None Include="LieToMe.pubxml" />
+    <Content Include="DB_create_table_and_insert.sql" />
     <Content Include="public\images\glyphicons-366-restart.png" />
     <Content Include="public\images\glyphicons-389-exit.png" />
     <Content Include="public\images\glyphicons-594-voice.png" />
