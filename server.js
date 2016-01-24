@@ -4,7 +4,6 @@
 var express = require('express.io');
 var http = require('http');
 var path = require('path');
-//var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var sql = require('mssql');
 var app = express();
 
@@ -26,17 +25,17 @@ app.use(app.router);
 
 //db connection string
 var config = {
-   // server: "localhost\\MSSQLSERVER",    //MARIN
-   server: "localhost\\SQLEXPRESS",    //LINA
+    server: "localhost\\MSSQLSERVER",   //MARIN
+    //server: "localhost\\SQLEXPRESS",    //LINA
     database: "LieToMeDB",
     user: "sa",
-    password: "n4KmgANB"        //MARIN
-   // password : "tbbt"           //LINA
-   //   password: "projekt"          //MARTINA
-
+    password: "n4KmgANB"                //MARIN
+    //password : "tbbt"                   //LINA
+    //password: "projekt"                 //MARTINA
 };
 
 //define variables
+var correctAnswerPoints = 100;
 var minUsersPerRoom = 3;
 var numberOfQuestions = 2;
 var questionsInRoom = [];
@@ -47,61 +46,22 @@ var correctAnswerForRoom = [];
 var answeresInRoom = [];
 var indexMessage = '';
 
-//debug init values
-rooms = rooms.concat('Public', 'Elfs', 'Random');
-lockedRooms = lockedRooms.concat('Public');
-questionsInRoom["Elfs"] = [];
-questionsInRoom["Random"] = [];
-usersInRoom["Elfs"] = [];
-usersInRoom["Random"] = [];
-answeresInRoom["Elfs"] = 0;
-answeresInRoom["Random"] = 0;
-
 
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
     
-/* Controlers */ 
+//controllers, HTTP GET
 app.get('/', function (req, res) {
     res.render('index', { title: 'LieToMe' });
-});
-    
+});    
 app.get('/create', function (req, res) {
     res.render('createroom', { title: 'LieToMe Room Create' });
 });
-    
-app.get('/rooms/:id', function (req, res) {
-    /** room doesn't exist
-     * trigered when user presses back button
-     * after he's been kicked out of the room
-     * caused by end of the game
-     */
-    if (rooms.indexOf(req.params.id) === -1) {
-        var argMessage = 'Soba ne postoji!';
-        var argLocation = '/';
-        var argArgument = '';
-        req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
-        return;
-    }
-        res.render('room', { title : req.params.id, username : req.query.username });
-});
-
-app.get('/server', function (req, res) {
-    res.render('server', { rooms: rooms });
-});
-
-app.get('/home', function (req, res) {
-    var x = [];
-    for (var i in rooms) {
-        if (!isInArray(lockedRooms, rooms[i])) {
-            x.push(rooms[i]);
-        }
-    }
-    res.render('home', { title: 'LieToMe' , rooms: x });
-});
-
 app.get('/serverRoom/:id', function (req, res) {
+    /* Contidion is true when creating room. 
+     * It's here for user control.
+     */ 
     if (rooms.indexOf(req.params.id) === -1) {
         rooms.push(req.params.id);
         console.log(rooms);
@@ -111,12 +71,40 @@ app.get('/serverRoom/:id', function (req, res) {
     }
     res.render('serverRoom', { title : req.params.id, username: 'root' });
 });
+app.get('/home', function (req, res) {
+    var x = [];
     
+    //"Hide" locked rooms from users
+    for (var i in rooms) {
+        if (!isInArray(lockedRooms, rooms[i])) {
+            x.push(rooms[i]);
+        }
+    }
+    res.render('home', { title: 'LieToMe' , rooms: x });
+});  
+app.get('/rooms/:id', function (req, res) {
+    /** Room doesn't exist.
+     * Trigered when user presses back button
+     * after he's been kicked out of the room
+     * after the end of the game.
+     */
+    if (rooms.indexOf(req.params.id) === -1) {
+        var argMessage = 'Soba ne postoji!';
+        var argLocation = '/';
+        var argArgument = '';
+        req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
+        return;
+    }
+    
+    //normal room joining
+     res.render('room', { title : req.params.id, username : req.query.username });
+});
 
-/* Routes */
-// Setup the ready route, handle wrong username or roomName
+
+
+//Routes (Setup the ready routes)
+/*handle wrong username or roomName*/
 app.io.route('checkUsernameAndRoom', function (req) {
-    //console.log(req.data.username + ' ' + req.data.roomName);
     var argMessage = '';
     var argLocation = 'home';
     var argArgument = '';
@@ -154,15 +142,23 @@ app.io.route('checkUsernameAndRoom', function (req) {
     
     req.io.emit('logonOK');
 });
+app.io.route('checkRoomName', function (req) {
+    var doubleRoom = isInArray(rooms, req.data.roomName);
+    if (doubleRoom) {
+        req.io.emit('roomChecked', "");
+    } else {
+        req.io.emit('roomChecked', "ok");
+    }
+});
 
-// Setup the ready route, join room and broadcast to room.
+/*Connect user (browser) to a room. Save sockets for further communication.*/
 app.io.route('userConnected', function (req) {
     req.io.join(req.data.roomName);
     req.io.room(req.data.roomName).broadcast('userConnected', {
-            message: req.data.username + ' je u sobi. ',
-            username: req.data.username
-        });
-        
+        message: req.data.username + ' je u sobi. ',
+        username: req.data.username
+    });
+    
     //room doesn't exist
     if (rooms.indexOf(req.data.roomName) === -1) {
         var argMessage = 'Soba ne postoji';
@@ -170,41 +166,70 @@ app.io.route('userConnected', function (req) {
         var argArgument = '';
         req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
         return;
-    } 
-    usersInRoom[req.data.roomName][req.data.username] = {answer: "", points: 0};
-});
-    
-app.io.route('gameOver', function (req) {
-    var room = req.data.roomName;
-
-    var roomIndex = rooms.indexOf(room);
-    var deletedRooms = rooms.splice(roomIndex, 1);
-    
-    var lockedRoomIndex = lockedRooms.indexOf(room);
-    var unlockedRoom = lockedRooms.splice(lockedRoomIndex, 1);
-
-    var removedQuestionInRoom = delete questionsInRoom[room];
-    
-    var removedUsersInRoom = delete usersInRoom[room];
-
-    var deletedCorrectAnswersForRoom = delete correctAnswerForRoom[room];
-
-    var deletedAnswersInRoom = delete answeresInRoom[room];
-    
-    app.io.room(room).broadcast('endGame');
-    console.log('Game in room ' + room + 'has ended.');
+    }
+    usersInRoom[req.data.roomName][req.data.username] = { answer: "", points: 0 };
 });
 
+app.io.route('lockRoom', function (req) {
+    var usersInThisRoom = objectsInArray(usersInRoom[req.data.roomName]);
+    
+    //handle not enough users in room error
+    if (usersInThisRoom < minUsersPerRoom) {
+        var dif = minUsersPerRoom - usersInThisRoom;
+        var argMessage = 'Nije moguće zaključati sobu. '
+        if (dif !== 1)
+            argMessage += 'Nedostaju još ' + (minUsersPerRoom - usersInThisRoom) + ' korisnika.';
+        else
+            argMessage += 'Nedostaje još ' + (minUsersPerRoom - usersInThisRoom) + ' korisnik.';
+        
+        var argLocation = '';
+        var argArgument = '';
+        req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
+        return;
+    }
+    
+    //lock room
+    lockedRooms.push(req.data.roomName);
+    
+    //show initial leaderboard
+    var users = getUsers(req.data.roomName);
+    req.io.emit('showUsersAndPoints', { users: users });
+    
+    sendQuestion(req);
+});
+app.io.route('getQuestion', function (req) {
+    var length = questionsInRoom[req.data.roomName].length;
+    
+    if (!(length % numberOfQuestions)) {
+        var users = getUsers(req.data.roomName);
+        var others = [];
+        var winners = pronounceWinners(users, others);
+        var winnerPoints = 0;
+        for (var i in winners) {
+            winnerPoints = winners[i].points;
+            break;
+        }
+        //add one element for next modulo operation
+        questionsInRoom[req.data.roomName].push(-1);
+        req.io.emit('roundOver', { winners: winners, winnerPoints: winnerPoints, others: others });
+    } else {
+        //remove -1 if exsists
+        var indexOf = questionsInRoom[req.data.roomName].indexOf(-1);
+        if (indexOf !== -1)
+            questionsInRoom[req.data.roomName].splice(indexOf, 1);
+        
+        sendQuestion(req);
+    }
+});
 app.io.route('sendMessage', function (req) {
-    console.log(req.data.roomName);
+    //users are not allowed to provide correct answer, they have to LIE
     if (req.data.message.toUpperCase() === correctAnswerForRoom[req.data.roomName].toUpperCase()) {
         req.io.emit('wrongInput');
         return;
     };
+
     req.io.emit('correctInput');
-    
-    req.io.join(req.data.roomName);
-    
+        
     var user = usersInRoom[req.data.roomName][req.data.username];
     usersInRoom[req.data.roomName][req.data.username] = { answer: req.data.message.toUpperCase(), points: user.points };
     var counterUserInRoom = objectsInArray(usersInRoom[req.data.roomName]);
@@ -222,72 +247,15 @@ app.io.route('sendMessage', function (req) {
         app.io.room(req.data.roomName).broadcast('answersReady', { users : randomizedUsersInRoom });
     }
 });
-
-app.io.route('lockRoom', function (req) {
-    var usersInThisRoom = objectsInArray(usersInRoom[req.data.roomName]);
-    if (usersInThisRoom < minUsersPerRoom) {
-        var dif = minUsersPerRoom - usersInThisRoom;
-        var argMessage = 'Nije moguće zaključati sobu. '
-        if (dif !== 1)
-            argMessage += 'Nedostaju još ' + (minUsersPerRoom - usersInThisRoom) + ' korisnika.';
-        else
-            argMessage += 'Nedostaje još ' + (minUsersPerRoom - usersInThisRoom) + ' korisnik.';
-        
-        var argLocation = '';
-        var argArgument = '';
-        req.io.emit('errorHandle', { message: argMessage, location: argLocation, argument: argArgument });
-        return;
-    }
-   
-    lockedRooms.push(req.data.roomName);
-    var users = getUsers(req.data.roomName);
-    req.io.emit('showUsersAndPoints', { users: users });
-    sendQuestion(req);
-});
-
-app.io.route('checkRoomName', function (req) {
-    //console.log("tu sam");
-    //console.log(req.data.roomName);
-    console.log('tu sam');
-    var doubleRoom = isInArray(rooms, req.data.roomName);
-    if (doubleRoom) {
-        req.io.emit('roomChecked', "");
-    } else {
-        req.io.emit('roomChecked', "ok");
-    }
-});
-
-app.io.route('getQuestion', function (req) {
-    var length = questionsInRoom[req.data.roomName].length;
-    if (req.data.newRound) {
-        for (var i = 0; i < length; i++) {
-            questionsInRoom[req.data.roomName].pop();
-}
-    }; 
-
-    if (numberOfQuestions <= questionsInRoom[req.data.roomName].length) {
-        var users = getUsers(req.data.roomName);
-        var others = [];
-        var winners = pronounceWinners(users, others);
-        var winnerPoints = 0;
-        for (var i in winners) {
-            winnerPoints = winners[i].points;
-            break;
-        }
-        req.io.emit('roundOver', {winners: winners, winnerPoints: winnerPoints, others: others});
-    } else {
-        sendQuestion(req);
-    }
-});
-
 app.io.route('answered', function (req) {
-    console.log('user: ' + req.data.username + ' in room: ' + req.data.roomName + ' answered: ' + req.data.answer);
     var user = usersInRoom[req.data.roomName][req.data.username];
-    var correctAnswerPoints = 100;
     answeresInRoom[req.data.roomName] += 1;
+    
+    //user answered correctly
     if (correctAnswerForRoom[req.data.roomName] === req.data.answer) {
         console.log('user ' + req.data.username + ' answered correctly');
         usersInRoom[req.data.roomName][req.data.username] = { answer: user.answer, points: (user.points + correctAnswerPoints) };
+    //user bought a lie
     } else {
         console.log('user ' + req.data.username + ' answered incorrectly');
         for (var i in usersInRoom[req.data.roomName]) {
@@ -299,6 +267,7 @@ app.io.route('answered', function (req) {
         }
     }
     
+    //everyone clicked given answers
     if (answeresInRoom[req.data.roomName] === objectsInArray(usersInRoom[req.data.roomName])) {
         app.io.room(req.data.roomName).broadcast('allAnswered', { users: getUsers(req.data.roomName).sort(function (a, b) { return b.points - a.points }) , corrans: correctAnswerForRoom[req.data.roomName] });
         for (var i in usersInRoom[req.data.roomName]) {
@@ -308,8 +277,32 @@ app.io.route('answered', function (req) {
     }
 });
 
+/*free resources*/
+app.io.route('gameOver', function (req) {
+    var room = req.data.roomName;
+    
+    var roomIndex = rooms.indexOf(room);
+    var deletedRooms = rooms.splice(roomIndex, 1);
+    
+    var lockedRoomIndex = lockedRooms.indexOf(room);
+    var unlockedRoom = lockedRooms.splice(lockedRoomIndex, 1);
+    
+    var removedQuestionInRoom = delete questionsInRoom[room];
+    
+    var removedUsersInRoom = delete usersInRoom[room];
+    
+    var deletedCorrectAnswersForRoom = delete correctAnswerForRoom[room];
+    
+    var deletedAnswersInRoom = delete answeresInRoom[room];
+    
+    app.io.room(room).broadcast('endGame');
+    console.log('Game in room ' + room + 'has ended.');
+});
 app.listen(app.get('port'));
 
+
+
+//functions
 function isInArray(array, obj) {
     for (var i = 0; i < array.length; i++) {
         if (array[i] === obj)
@@ -317,13 +310,16 @@ function isInArray(array, obj) {
     }
     return false;
 }
-
 function objectsInArray(array) {
     var counter = -1;
     for (var i in array) { counter++;}
     return (counter);
 }
 
+/* Function gets question from
+ * database, and sends it to
+ * main screen.
+ */
 function sendQuestion(req) {
     var conn = new sql.Connection(config);
     var request = new sql.Request(conn);
@@ -341,7 +337,6 @@ function sendQuestion(req) {
                 //find new question
                 do {
                     var x = Math.floor(Math.random() * recordset[0].numberOfRecords);
-                    console.log('x: ' + x);
                     contains = isInArray(questionsInRoom[req.data.roomName], x);
                 } while (contains);
                 questionsInRoom[req.data.roomName].push(x);
@@ -359,7 +354,6 @@ function sendQuestion(req) {
                 
     });
 }
-
 function getUsers(roomName) {
     var users = [];
     for (var i in usersInRoom[roomName]) {
@@ -369,7 +363,6 @@ function getUsers(roomName) {
     }
     return users;
 }
-
 function isAnswerCopy(atmRoom, atmAnswer) {
     for (var i in usersInRoom[atmRoom]) {
         if (usersInRoom[atmRoom][i].answer === atmAnswer) {
@@ -378,7 +371,6 @@ function isAnswerCopy(atmRoom, atmAnswer) {
     }
     return false;
 }
-
 function randomizeArray(array) {
     var newIndex = 0;
     var oldValue = "";
@@ -389,14 +381,16 @@ function randomizeArray(array) {
         array[newIndex] = oldValue;
     }
 }
-
 function randomizeUsersInRoom(roomName) {
     var usernames = [];
     var usersInRoomRandomized = [];
     var answers = [];
     var usersWhoAnswered = [];
     var sameAnswerCounter = 0;
-   
+    
+    /* Check how many same answers or
+     * groups of same answers are there.
+     */
     for (var i in usersInRoom[roomName]) {
         usernames.push(i);
         if (typeof usersWhoAnswered[usersInRoom[roomName][i].answer] === 'undefined') 
@@ -411,7 +405,7 @@ function randomizeUsersInRoom(roomName) {
     
     var arrayLength = usernames.length - sameAnswerCounter - 1;
     var indexForCorrectAnswer = Math.floor(Math.random() * arrayLength);
-    console.log(arrayLength);
+ 
     for (var i = 0; i < usernames.length; i++) {
         var answer = usersInRoom[roomName][usernames[i]].answer;
         if (isInArray(answers, answer)) {
@@ -430,8 +424,7 @@ function randomizeUsersInRoom(roomName) {
         };
     }
     return usersInRoomRandomized;
-}
-        
+}    
 function isInRoom(atmRoom, atmUser) {
     for (var i in usersInRoom[atmRoom]) {
         if (i === atmUser) {
@@ -440,7 +433,6 @@ function isInRoom(atmRoom, atmUser) {
     }
     return false;
     }
-  
 function pronounceWinners(users, others) {
     var winners = [];
     var maxPoints = 0;

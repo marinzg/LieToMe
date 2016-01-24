@@ -5,7 +5,7 @@ block content
             div(style='margin-bottom: 30px;margin-left:auto; margin-right:auto;').well
                 .dropdown
                     button#dropdownMenu1.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
-                        | Odaberi postojeću sobu
+                        | Choose an existing room 
                         span.caret
                         |   
                     ul.dropdown-menu(role='menu', aria-labelledby='dropdownMenu1') 
@@ -13,9 +13,9 @@ block content
                             li
                                 a()=room
                             
-                    button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Uđi u sobu
+                    button#joinButton(type='button' action='' class='btn btn-default' style='margin-left:10px') Join!
             .col-lg-6
-                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Stvori novu sobu
+                button#createButton(type='button' class='btn btn-default' style='marginleft:10px') Create a new room!
 
     script(type='text/javascript').
         var roomName;
@@ -40,9 +40,3 @@ block content
           $("#dropdownMenu1").addClass("btn-primary");
 
         });
-        //$(function () {
-        //var message = '#{message}';
-        //if(message!==''){
-        //    alert(message);
-        //}
-        //});

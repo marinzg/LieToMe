@@ -33,26 +33,10 @@
   <ItemGroup>
     <Compile Include="public\javascripts\websockets.js" />
     <Compile Include="server.js" />
-    <Compile Include="Spin.js" />
     <None Include="LieToMe.pubxml" />
-    <Content Include="public\images\black_cat-128.png" />
-    <Content Include="public\images\black_cat-512.png" />
-    <Content Include="public\images\conference-128.png" />
-    <Content Include="public\images\conference-256.png" />
-    <Content Include="public\images\glasses-32.png" />
-    <Content Include="public\images\glasses-64.png" />
     <Content Include="public\images\glyphicons-366-restart.png" />
     <Content Include="public\images\glyphicons-389-exit.png" />
     <Content Include="public\images\glyphicons-594-voice.png" />
-    <Content Include="public\images\key-26.png" />
-    <Content Include="public\images\key-48.png" />
-    <Content Include="public\images\key-64.png" />
-    <Content Include="public\images\mustache-128.png" />
-    <Content Include="public\images\talk-128.png" />
-    <Content Include="public\images\talk-256.png" />
-    <Content Include="public\images\talk-64.png" />
-    <Content Include="public\images\witch-26.png" />
-    <Content Include="public\images\witch-32.png" />
     <Content Include="public\stylesheets\custom.css" />
     <Content Include="public\stylesheets\LieToMeCustom.css" />
     <Content Include="public\stylesheets\style.styl" />
@@ -61,7 +45,6 @@
     <Content Include="views\home.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\room.jade" />
-    <Content Include="views\server.jade" />
     <Content Include="views\serverRoom.jade" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config" />
